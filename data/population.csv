@@ -1,0 +1,76 @@
+city,year,population,state
+Delhi,1981,7206704,Delhi
+Delhi,1991,9420644,Delhi
+Delhi,2001,13850507,Delhi
+Delhi,2011,16314838,Delhi
+Delhi,2021,20667656,Delhi
+Mumbai,1981,9925891,Maharashtra
+Mumbai,1991,12596243,Maharashtra
+Mumbai,2001,16368084,Maharashtra
+Mumbai,2011,18414288,Maharashtra
+Mumbai,2021,21297000,Maharashtra
+Bangalore,1981,2921751,Karnataka
+Bangalore,1991,4130288,Karnataka
+Bangalore,2001,5701446,Karnataka
+Bangalore,2011,8499399,Karnataka
+Bangalore,2021,13193000,Karnataka
+Chennai,1981,4289347,Tamil Nadu
+Chennai,1991,5421985,Tamil Nadu
+Chennai,2001,6560242,Tamil Nadu
+Chennai,2011,8696010,Tamil Nadu
+Chennai,2021,10971108,Tamil Nadu
+Hyderabad,1981,2992000,Telangana
+Hyderabad,1991,4253000,Telangana
+Hyderabad,2001,5742036,Telangana
+Hyderabad,2011,7749334,Telangana
+Hyderabad,2021,10534418,Telangana
+Pune,1981,1685000,Maharashtra
+Pune,1991,2493987,Maharashtra
+Pune,2001,3760636,Maharashtra
+Pune,2011,5049968,Maharashtra
+Pune,2021,7404067,Maharashtra
+Kolkata,1981,9194018,West Bengal
+Kolkata,1991,10916272,West Bengal
+Kolkata,2001,13216546,West Bengal
+Kolkata,2011,14112536,West Bengal
+Kolkata,2021,15134000,West Bengal
+Ahmedabad,1981,2515195,Gujarat
+Ahmedabad,1991,3297655,Gujarat
+Ahmedabad,2001,4519278,Gujarat
+Ahmedabad,2011,6352254,Gujarat
+Ahmedabad,2021,8650000,Gujarat
+Surat,1981,776583,Gujarat
+Surat,1991,1517076,Gujarat
+Surat,2001,2811614,Gujarat
+Surat,2011,4585367,Gujarat
+Surat,2021,7784000,Gujarat
+Jaipur,1981,1004683,Rajasthan
+Jaipur,1991,1514425,Rajasthan
+Jaipur,2001,2322575,Rajasthan
+Jaipur,2011,3046163,Rajasthan
+Jaipur,2021,4100000,Rajasthan
+Lucknow,1981,1007604,Uttar Pradesh
+Lucknow,1991,1619115,Uttar Pradesh
+Lucknow,2001,2245509,Uttar Pradesh
+Lucknow,2011,2901474,Uttar Pradesh
+Lucknow,2021,3800000,Uttar Pradesh
+Kanpur,1981,1639064,Uttar Pradesh
+Kanpur,1991,2029889,Uttar Pradesh
+Kanpur,2001,2690486,Uttar Pradesh
+Kanpur,2011,2767031,Uttar Pradesh
+Kanpur,2021,3100000,Uttar Pradesh
+Nagpur,1981,1302066,Maharashtra
+Nagpur,1991,1661409,Maharashtra
+Nagpur,2001,2089532,Maharashtra
+Nagpur,2011,2405421,Maharashtra
+Nagpur,2021,2900000,Maharashtra
+Indore,1981,829327,Madhya Pradesh
+Indore,1991,1091674,Madhya Pradesh
+Indore,2001,1597441,Madhya Pradesh
+Indore,2011,1964086,Madhya Pradesh
+Indore,2021,2800000,Madhya Pradesh
+Thane,1981,309000,Maharashtra
+Thane,1991,803000,Maharashtra
+Thane,2001,1261517,Maharashtra
+Thane,2011,1841488,Maharashtra
+Thane,2021,2700000,Maharashtra

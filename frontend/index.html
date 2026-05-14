@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IDP — Urban Infrastructure Prediction System</title>
+  <meta name="description" content="AI-powered population forecasting and infrastructure planning for Indian cities. Predict future schools, hospitals, buses, and roads your city will need." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Hero ── */
+    .hero {
+      min-height: calc(100vh - 64px);
+      display: flex;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .hero-content { max-width: 680px; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #a78bfa;
+      margin-bottom: 24px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5.5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: 40px;
+    }
+
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    /* ── Quick search ── */
+    .quick-search {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(12px);
+      margin-top: 60px;
+    }
+
+    .quick-search h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 180px auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    /* ── Stats ticker ── */
+    .stats-row {
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+    }
+
+    .stat-item {}
+    .stat-item .num {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: var(--accent-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-item .lbl {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ── Feature grid ── */
+    .feature-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 { margin-bottom: 8px; font-size: 1.05rem; }
+    .feature-card p  { font-size: 0.88rem; }
+
+    /* ── Hero visual ── */
+    .hero-visual {
+      position: absolute;
+      right: -80px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 500px;
+      height: 500px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+    }
+
+    .orb-1 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(124,58,237,0.35), transparent);
+      top: 0; right: 0;
+      animation: float1 6s ease-in-out infinite;
+    }
+
+    .orb-2 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(59,130,246,0.3), transparent);
+      bottom: 0; left: 0;
+      animation: float2 8s ease-in-out infinite;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-20px) scale(1.05); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(20px) scale(0.95); }
+    }
+
+    /* ── How it works ── */
+    .step-number {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--accent-grad);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: var(--transition);
+    }
+
+    .step-row:hover {
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+    }
+
+    @media (max-width: 900px) {
+      .hero-visual { display: none; }
+      .search-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🏙️</div>
+      <span class="gradient-text">IDP</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="sources.html">Data Sources</a></li>
+      <li><a href="dashboard.html" class="btn btn-sm nav-cta">Try Now →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content fade-in">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        AI-Powered Urban Planning Intelligence
+      </div>
+
+      <h1>
+        Predict Your City's<br/>
+        <span class="gradient-text">Future Infrastructure</span>
+      </h1>
+
+      <p>
+        Enter any major Indian city and a target year. Our multi-model AI engine
+        forecasts population growth and calculates exactly how many schools,
+        hospitals, buses, and roads will be needed — with confidence ranges.
+      </p>
+
+      <div class="hero-actions">
+        <a href="dashboard.html" class="btn btn-primary btn-lg" id="hero-cta-btn">
+          🚀 Start Prediction
+        </a>
+        <a href="about.html" class="btn btn-secondary btn-lg">
+          Learn How It Works
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating orbs -->
+    <div class="hero-visual">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats ── -->
+<section class="section" style="padding-top: 0;">
+  <div class="container">
+    <!-- Quick search -->
+    <div class="quick-search fade-in fade-in-delay-2">
+      <h3>⚡ Quick Prediction</h3>
+      <div class="search-row">
+        <div class="form-group">
+          <label class="form-label" for="qs-city">City</label>
+          <select class="form-control" id="qs-city">
+            <option value="">Loading cities...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="qs-year">Target Year</label>
+          <select class="form-control" id="qs-year"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">&nbsp;</label>
+          <button class="btn btn-primary" id="qs-btn" onclick="quickPredict()">
+            Predict →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats ticker -->
+    <div class="stats-row fade-in fade-in-delay-3">
+      <div class="stat-item">
+        <div class="num" id="stat-cities">15</div>
+        <div class="lbl">Cities Covered</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">5</div>
+        <div class="lbl">Decades of Data</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">3</div>
+        <div class="lbl">AI Models Compared</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">4</div>
+        <div class="lbl">Infrastructure Types</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 56px;">
+      <span class="badge badge-purple" style="margin-bottom: 16px;">What IDP Does</span>
+      <h2>Every Layer of the Urban Future</h2>
+      <p style="max-width: 520px; margin: 12px auto;">
+        From raw census numbers to actionable infrastructure planning — one system.
+      </p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card feature-card fade-in fade-in-delay-1">
+        <div class="feature-icon" style="background: rgba(124,58,237,0.15);">🤖</div>
+        <h3>Multi-Model AI</h3>
+        <p>Compares Linear, Polynomial, and Exponential regression models. Selects the best by cross-validated R² score automatically.</p>
+      </div>
+      <div class="card feature-card fade-in fade-in-delay-2">
+        <div class="feature-icon" style="background: rgba(59,130,246,0.15);">📊</div>
+        <h3>Real Census Data</h3>
+        <p>Trained on 5 decades of Indian census data (1981–2021) for 15 major cities. Predictions are grounded in reality.</p>
+      </div>
+      <div class="card feature-card fade-in fade-in-delay-3">
+        <div class="feature-icon" style="background: rgba(6,182,212,0.15);">🏗️</div>
+        <h3>Infrastructure Analysis</h3>
+        <p>Translates population into required schools, hospitals, buses, and roads using official Indian urban planning norms.</p>
+      </div>
+      <div class="card feature-card fade-in fade-in-delay-1">
+        <div class="feature-icon" style="background: rgba(16,185,129,0.15);">⚠️</div>
+        <h3>Shortage Warnings</h3>
+        <p>Auto-generates critical and warning alerts when projected deficits exceed 10% or 30% of requirement.</p>
+      </div>
+      <div class="card feature-card fade-in fade-in-delay-2">
+        <div class="feature-icon" style="background: rgba(245,158,11,0.15);">📈</div>
+        <h3>Visual Charts</h3>
+        <p>Interactive population growth timeline with confidence bands, plus infrastructure comparison charts.</p>
+      </div>
+      <div class="card feature-card fade-in fade-in-delay-3">
+        <div class="feature-icon" style="background: rgba(239,68,68,0.15);">🎯</div>
+        <h3>Confidence Intervals</h3>
+        <p>Every prediction includes uncertainty ranges — ±10% for 15-year outlook, ±20% for long-term horizons.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 48px;">
+      <span class="badge badge-blue" style="margin-bottom: 16px;">How It Works</span>
+      <h2>Three Steps. One Insight.</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px; max-width: 700px; margin: 0 auto;">
+      <div class="step-row fade-in">
+        <div class="step-number">1</div>
+        <div>
+          <h3 style="margin-bottom: 6px;">Select Your City & Year</h3>
+          <p style="font-size: 0.9rem;">Choose from 15 major Indian cities. Set any target year from 2025 to 2100. Optionally override current infrastructure counts.</p>
+        </div>
+      </div>
+      <div class="step-row fade-in fade-in-delay-1">
+        <div class="step-number">2</div>
+        <div>
+          <h3 style="margin-bottom: 6px;">AI Runs 3 Models Simultaneously</h3>
+          <p style="font-size: 0.9rem;">Linear, Polynomial, and Exponential regression compete. The one with the highest cross-validated R² score wins and makes the final prediction.</p>
+        </div>
+      </div>
+      <div class="step-row fade-in fade-in-delay-2">
+        <div class="step-number">3</div>
+        <div>
+          <h3 style="margin-bottom: 6px;">Get Your Full Infrastructure Blueprint</h3>
+          <p style="font-size: 0.9rem;">See predicted population, required schools/hospitals/buses/roads, current deficits, and visual charts — all in one dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top: 48px;">
+      <a href="dashboard.html" class="btn btn-primary btn-lg" id="how-cta-btn">
+        Open Dashboard →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Backend status ── -->
+<section class="section" style="padding-top: 0;">
+  <div class="container">
+    <div id="backend-status-bar" class="alert alert-info" style="max-width: 600px; margin: 0 auto; display:none;">
+      <span>⚠️</span>
+      <span>Backend is offline. <a href="about.html#setup" style="color:inherit;font-weight:700;">Start the server</a> to use predictions.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <p>
+    <strong class="gradient-text">IDP</strong> — Urban Infrastructure Prediction System &nbsp;|&nbsp;
+    Built with FastAPI + scikit-learn + Chart.js &nbsp;|&nbsp;
+    Data: Census of India, World Bank
+  </p>
+</footer>
+
+<script src="js/api.js"></script>
+<script>
+  // ── Populate year selector ──
+  const ysEl = document.getElementById("qs-year");
+  for (let y = 2025; y <= 2075; y += 5) {
+    const opt = document.createElement("option");
+    opt.value = y;
+    opt.textContent = y;
+    if (y === 2040) opt.selected = true;
+    ysEl.appendChild(opt);
+  }
+
+  // ── Load cities ──
+  (async () => {
+    const el = document.getElementById("qs-city");
+    try {
+      const data = await getCities();
+      el.innerHTML = "";
+      data.cities.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c; opt.textContent = c;
+        el.appendChild(opt);
+      });
+      document.getElementById("stat-cities").textContent = data.count;
+    } catch {
+      el.innerHTML = '<option value="">Backend offline</option>';
+      document.getElementById("backend-status-bar").style.display = "flex";
+    }
+  })();
+
+  // ── Backend health check ──
+  checkBackendHealth().then(ok => {
+    if (!ok) document.getElementById("backend-status-bar").style.display = "flex";
+  });
+
+  // ── Quick predict → redirect to dashboard ──
+  function quickPredict() {
+    const city = document.getElementById("qs-city").value;
+    const year = document.getElementById("qs-year").value;
+    if (!city) return;
+    window.location.href = `dashboard.html?city=${encodeURIComponent(city)}&year=${year}`;
+  }
+</script>
+</body>
+</html>

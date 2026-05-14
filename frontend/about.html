@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — IDP Urban Infrastructure Prediction System</title>
+  <meta name="description" content="Learn how the IDP AI prediction engine works — multi-model regression, census data, and urban planning formulas explained." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🏙️</div>
+      <span class="gradient-text">IDP</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="about.html" class="active">About</a></li>
+      <li><a href="sources.html">Data Sources</a></li>
+      <li><a href="dashboard.html" class="btn btn-sm nav-cta">Try Now →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container" style="max-width: 860px;">
+
+    <div style="margin-bottom: 56px; text-align: center;" class="fade-in">
+      <span class="badge badge-purple" style="margin-bottom: 16px;">Methodology</span>
+      <h1>How IDP Works</h1>
+      <p style="max-width:580px; margin: 12px auto; font-size:1.05rem;">
+        A transparent look at the AI engine, data pipeline, and planning formulas
+        that power every prediction.
+      </p>
+    </div>
+
+    <!-- AI Engine -->
+    <div class="card fade-in" style="margin-bottom: 24px;">
+      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">🤖 The AI Prediction Engine</h2>
+      <p style="margin-bottom: 16px;">
+        IDP does not use a single model. It trains three regression models on every prediction
+        and selects the one with the highest <strong>cross-validated R² score</strong>.
+      </p>
+      <div class="grid-3" style="margin-top: 20px;">
+        <div style="padding: 16px; background: rgba(124,58,237,0.08); border-radius: 12px; border: 1px solid rgba(124,58,237,0.2);">
+          <div style="font-weight:700; margin-bottom:8px;">Linear Regression</div>
+          <p style="font-size:0.83rem;">Assumes population grows at a constant rate per year. Best for stable, slow-growth cities.</p>
+        </div>
+        <div style="padding: 16px; background: rgba(59,130,246,0.08); border-radius: 12px; border: 1px solid rgba(59,130,246,0.2);">
+          <div style="font-weight:700; margin-bottom:8px;">Polynomial (Degree 2)</div>
+          <p style="font-size:0.83rem;">Captures acceleration — the rate of growth itself is increasing. Common in fast-developing cities.</p>
+        </div>
+        <div style="padding: 16px; background: rgba(6,182,212,0.08); border-radius: 12px; border: 1px solid rgba(6,182,212,0.2);">
+          <div style="font-weight:700; margin-bottom:8px;">Exponential Regression</div>
+          <p style="font-size:0.83rem;">Models compounding growth (log-linearised). Best for high-growth metros like Bangalore or Surat.</p>
+        </div>
+      </div>
+      <div class="alert alert-info" style="margin-top:20px;">
+        <span>ℹ️</span>
+        <span>The winning model is shown on the dashboard along with its R² score. Values above 0.95 indicate very high predictive confidence.</span>
+      </div>
+    </div>
+
+    <!-- Infrastructure Formulas -->
+    <div class="card fade-in fade-in-delay-1" style="margin-bottom: 24px;" id="setup">
+      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">🏗️ Infrastructure Planning Norms</h2>
+      <p style="margin-bottom: 20px;">
+        Once population is predicted, IDP applies Indian Urban Planning norms to calculate
+        required infrastructure. These are based on Ministry of Urban Development guidelines.
+      </p>
+      <div class="grid-2">
+        <div class="stat-card">
+          <div class="stat-icon">🏫</div>
+          <div class="stat-label">Schools</div>
+          <div class="stat-value" style="font-size:1.4rem;">1 per 5,000</div>
+          <div class="stat-sub">people (UDPFI Norms)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏥</div>
+          <div class="stat-label">Hospitals</div>
+          <div class="stat-value" style="font-size:1.4rem;">1 per 25,000</div>
+          <div class="stat-sub">people (NHP Standard)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🚌</div>
+          <div class="stat-label">Buses</div>
+          <div class="stat-value" style="font-size:1.4rem;">1 per 1,200</div>
+          <div class="stat-sub">people (MoUD Transport)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛣️</div>
+          <div class="stat-label">Roads</div>
+          <div class="stat-value" style="font-size:1.4rem;">1 km per 800</div>
+          <div class="stat-sub">people (IRC:SP:20)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Setup Guide -->
+    <div class="card fade-in fade-in-delay-2" style="margin-bottom: 24px;">
+      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">⚙️ Running Locally</h2>
+
+      <div style="font-size:0.88rem; display:flex; flex-direction:column; gap:16px;">
+        <div>
+          <div style="font-weight:700; margin-bottom:6px; color:var(--text-secondary);">Step 1 — Install dependencies</div>
+          <pre style="background:rgba(0,0,0,0.4); padding:12px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; overflow-x:auto; color:#a78bfa;">cd backend
+pip install -r requirements.txt</pre>
+        </div>
+        <div>
+          <div style="font-weight:700; margin-bottom:6px; color:var(--text-secondary);">Step 2 — Start the backend (port 8000)</div>
+          <pre style="background:rgba(0,0,0,0.4); padding:12px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; overflow-x:auto; color:#a78bfa;">uvicorn main:app --reload</pre>
+        </div>
+        <div>
+          <div style="font-weight:700; margin-bottom:6px; color:var(--text-secondary);">Step 3 — Start the frontend (port 3000)</div>
+          <pre style="background:rgba(0,0,0,0.4); padding:12px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; overflow-x:auto; color:#a78bfa;">cd frontend
+python -m http.server 3000</pre>
+        </div>
+        <div>
+          <div style="font-weight:700; margin-bottom:6px; color:var(--text-secondary);">Step 4 — Open in browser</div>
+          <pre style="background:rgba(0,0,0,0.4); padding:12px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; overflow-x:auto; color:#a78bfa;">http://localhost:3000/index.html</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Limitations -->
+    <div class="card fade-in fade-in-delay-3">
+      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">⚠️ Limitations (V1)</h2>
+      <ul style="font-size:0.9rem; color:var(--text-secondary); display:flex; flex-direction:column; gap:8px; padding-left:20px;">
+        <li>Predictions assume <strong>historical trends continue</strong> — they do not account for sudden policy changes, pandemics, or economic shocks.</li>
+        <li>Infrastructure baselines are approximated from 2021 data; real figures may differ slightly.</li>
+        <li>Currently covers <strong>15 major Indian cities</strong> — smaller cities and towns are not yet supported.</li>
+        <li>Confidence bands are heuristic (±10/20%) — future versions will use proper Monte Carlo simulation.</li>
+        <li>No migration modelling yet — internal and international migration are not separated from net population growth.</li>
+      </ul>
+      <div class="alert alert-info" style="margin-top:20px;">
+        <span>🔬</span>
+        <span>V2 will add Prophet time-series forecasting, migration data, and PostgreSQL for live data updates.</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <p><strong class="gradient-text">IDP</strong> — Urban Infrastructure Prediction System &nbsp;|&nbsp; V1.0</p>
+</footer>
+</body>
+</html>

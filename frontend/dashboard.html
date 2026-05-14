@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prediction Dashboard — IDP</title>
+  <meta name="description" content="AI-powered urban infrastructure prediction dashboard. Forecast population and infrastructure needs for any Indian city." />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      min-height: calc(100vh - 64px - 80px);
+      padding: 32px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Input Panel ── */
+    .input-panel {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-header {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+    }
+
+    .year-display {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: var(--accent-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      margin: 4px 0;
+    }
+
+    /* ── Results Panel ── */
+    .results-panel { display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Prediction Hero Card ── */
+    .prediction-hero {
+      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(59,130,246,0.10));
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .prediction-hero .pop-number {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      background: var(--accent-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .prediction-hero .pop-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+
+    .model-info {
+      text-align: right;
+    }
+
+    .model-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .r2-score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--success);
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Infra cards grid ── */
+    .infra-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .infra-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .infra-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+    }
+
+    .infra-icon { font-size: 1.6rem; margin-bottom: 4px; }
+    .infra-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+    .infra-required { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em; }
+    .infra-current  { font-size: 0.8rem; color: var(--text-secondary); }
+    .infra-deficit  { font-size: 0.8rem; font-weight: 600; }
+    .deficit-pos    { color: var(--danger); }
+    .deficit-neg    { color: var(--success); }
+
+    /* ── Chart cards ── */
+    .chart-card { height: 320px; position: relative; }
+    .chart-card canvas { width: 100% !important; height: 100% !important; }
+
+    .chart-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Loading state ── */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 60px;
+    }
+
+    .loading-text { color: var(--text-secondary); font-size: 0.9rem; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .empty-icon { font-size: 4rem; opacity: 0.4; }
+    .empty-title { font-size: 1.25rem; font-weight: 700; }
+    .empty-desc  { font-size: 0.9rem; color: var(--text-secondary); max-width: 300px; }
+
+    /* ── Error state ── */
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    /* ── Progress bars in infra detail ── */
+    .infra-detail-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .infra-detail-row:last-child { border-bottom: none; }
+    .infra-detail-label { width: 100px; font-size: 0.82rem; color: var(--text-secondary); }
+    .infra-detail-bar   { flex: 1; }
+    .infra-detail-nums  { width: 140px; text-align: right; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; }
+
+    @media (max-width: 1024px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .input-panel { position: static; }
+      .infra-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .infra-grid { grid-template-columns: 1fr; }
+      .prediction-hero { flex-direction: column; }
+      .model-info { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">🏙️</div>
+      <span class="gradient-text">IDP</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="sources.html">Data Sources</a></li>
+      <li><a href="dashboard.html" class="btn btn-sm nav-cta">Predict →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="dashboard-layout">
+
+    <!-- ══════════════════════════════════════
+         INPUT PANEL
+    ══════════════════════════════════════ -->
+    <aside class="input-panel">
+      <div class="card">
+        <div class="panel-header">📍 City & Year</div>
+
+        <div class="form-group">
+          <label class="form-label" for="city-select">City</label>
+          <select class="form-control" id="city-select">
+            <option value="">— Select city —</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-top: 16px;">
+          <label class="form-label" for="year-range">
+            Target Year &nbsp; <span class="year-display" id="year-label">2040</span>
+          </label>
+          <input type="range" id="year-range" min="2025" max="2075" value="2040" step="1"
+                 oninput="document.getElementById('year-label').textContent=this.value" />
+          <div style="display:flex; justify-content:space-between; margin-top:4px;">
+            <span style="font-size:0.72rem; color:var(--text-muted);">2025</span>
+            <span style="font-size:0.72rem; color:var(--text-muted);">2075</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%; margin-top:20px; justify-content:center;" id="predict-btn" onclick="runPredictionFlow()">
+          🚀 Run Prediction
+        </button>
+      </div>
+
+      <!-- Current Infrastructure Override -->
+      <div class="card" id="infra-override-panel">
+        <div class="panel-header">🏗️ Current Infrastructure <span class="badge badge-blue" style="margin-left:8px;">Optional Override</span></div>
+        <p style="font-size: 0.8rem; margin-bottom: 16px;">Leave blank to use database defaults.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="cur-schools">Schools</label>
+            <input type="number" class="form-control" id="cur-schools" placeholder="auto" min="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cur-hospitals">Hospitals</label>
+            <input type="number" class="form-control" id="cur-hospitals" placeholder="auto" min="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cur-buses">Buses</label>
+            <input type="number" class="form-control" id="cur-buses" placeholder="auto" min="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cur-roads">Roads (km)</label>
+            <input type="number" class="form-control" id="cur-roads" placeholder="auto" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <!-- City Info Card (populated after selection) -->
+      <div class="card" id="city-info-card" style="display:none;">
+        <div class="panel-header" id="city-info-title">City Info</div>
+        <div id="city-info-content"></div>
+      </div>
+    </aside>
+
+    <!-- ══════════════════════════════════════
+         RESULTS PANEL
+    ══════════════════════════════════════ -->
+    <main class="results-panel" id="results-panel">
+
+      <!-- Empty state -->
+      <div class="card empty-state" id="empty-state">
+        <div class="empty-icon">🏙️</div>
+        <div class="empty-title">Select a City to Begin</div>
+        <div class="empty-desc">Choose a city and target year from the panel on the left, then click Run Prediction.</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<footer class="footer">
+  <p><strong class="gradient-text">IDP</strong> — Urban Infrastructure Prediction System</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/charts.js"></script>
+<script>
+// ────────────────────────────────────────────────
+// Dashboard App Logic
+// ────────────────────────────────────────────────
+
+// Load cities into dropdown
+(async () => {
+  const sel = document.getElementById("city-select");
+  try {
+    const data = await getCities();
+    data.cities.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  } catch {
+    sel.innerHTML = '<option value="">⚠️ Backend offline</option>';
+  }
+})();
+
+// Auto-load city info when city changes
+document.getElementById("city-select").addEventListener("change", async (e) => {
+  const city = e.target.value;
+  if (!city) return;
+  try {
+    const data = await getCityData(city);
+    showCityInfo(data);
+  } catch {}
+});
+
+// Parse URL params (from quick search on homepage)
+window.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const city = params.get("city");
+  const year = params.get("year");
+
+  if (city) {
+    // Wait for cities to load, then set
+    setTimeout(() => {
+      const sel = document.getElementById("city-select");
+      const opt = [...sel.options].find(o => o.value === city);
+      if (opt) {
+        sel.value = city;
+        sel.dispatchEvent(new Event("change"));
+      }
+      if (year) {
+        document.getElementById("year-range").value = year;
+        document.getElementById("year-label").textContent = year;
+      }
+      // Auto-run
+      setTimeout(runPredictionFlow, 300);
+    }, 800);
+  }
+});
+
+// Show city baseline info in sidebar
+function showCityInfo(data) {
+  const card = document.getElementById("city-info-card");
+  const title = document.getElementById("city-info-title");
+  const content = document.getElementById("city-info-content");
+
+  title.innerHTML = `📊 ${data.city} — Baseline 2021`;
+
+  const latestPop = data.historical_population.at(-1)?.population ?? 0;
+  const infra = data.current_infrastructure;
+
+  content.innerHTML = `
+    <div style="font-size:0.82rem; display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted)">State</span>
+        <span>${data.state}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted)">Population (2021)</span>
+        <span style="font-weight:700;">${formatNumber(latestPop)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted)">Area</span>
+        <span>${formatNumber(data.area_km2)} km²</span>
+      </div>
+      <div class="divider"></div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted)">🏫 Schools</span>
+        <span>${formatNumber(infra.schools)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted)">🏥 Hospitals</span>
+        <span>${formatNumber(infra.hospitals)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted)">🚌 Buses</span>
+        <span>${formatNumber(infra.buses)}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted)">🛣️ Roads</span>
+        <span>${formatNumber(infra.roads_km)} km</span>
+      </div>
+    </div>
+  `;
+
+  card.style.display = "block";
+  card.style.animation = "fadeUp 0.4s ease";
+}
+
+// ── Main prediction flow ──
+async function runPredictionFlow() {
+  const city = document.getElementById("city-select").value;
+  const year = parseInt(document.getElementById("year-range").value);
+
+  if (!city) {
+    alert("Please select a city first.");
+    return;
+  }
+
+  // Optional infrastructure overrides
+  const s = v => parseInt(v) || null;
+  const cur = {
+    schools:   s(document.getElementById("cur-schools").value),
+    hospitals: s(document.getElementById("cur-hospitals").value),
+    buses:     s(document.getElementById("cur-buses").value),
+    roads_km:  s(document.getElementById("cur-roads").value),
+  };
+  const hasOverride = Object.values(cur).some(v => v !== null);
+  const currentInfrastructure = hasOverride ? cur : null;
+
+  // Show loading
+  showLoading(city, year);
+
+  try {
+    const data = await runPrediction(city, year, currentInfrastructure);
+    renderResults(data);
+  } catch (err) {
+    showError(err.message);
+  }
+}
+
+function showLoading(city, year) {
+  const panel = document.getElementById("results-panel");
+  panel.innerHTML = `
+    <div class="card loading-state">
+      <div class="spinner"></div>
+      <div class="loading-text">Running AI models for <strong>${city} → ${year}</strong>...</div>
+      <div style="font-size:0.78rem; color:var(--text-muted);">Comparing Linear, Polynomial & Exponential regression</div>
+    </div>
+  `;
+}
+
+function showError(msg) {
+  const panel = document.getElementById("results-panel");
+  panel.innerHTML = `
+    <div class="card error-state">
+      <div style="font-size:3rem;">⚠️</div>
+      <div class="empty-title">Prediction Failed</div>
+      <div class="alert alert-critical" style="margin-top:12px; width:100%; max-width:500px;">${msg}</div>
+      <p style="font-size:0.85rem;">Make sure the backend is running: <code>uvicorn main:app --reload</code></p>
+    </div>
+  `;
+}
+
+function renderResults(d) {
+  const panel = document.getElementById("results-panel");
+
+  // ── Warnings HTML ──
+  const warningHTML = d.warnings.length
+    ? d.warnings.map(w =>
+        `<div class="alert ${w.type === 'critical' ? 'alert-critical' : 'alert-warning'}" style="margin-bottom:8px;">
+           ${w.message}
+         </div>`
+      ).join("")
+    : `<div class="alert alert-success">✅ No critical shortfalls detected for ${d.city} by ${d.target_year}.</div>`;
+
+  // ── Infrastructure cards ──
+  const infraItems = [
+    { key:"schools",   icon:"🏫", label:"Schools" },
+    { key:"hospitals", icon:"🏥", label:"Hospitals" },
+    { key:"buses",     icon:"🚌", label:"Buses" },
+    { key:"roads_km",  icon:"🛣️", label:"Roads (km)" },
+  ];
+
+  const infraCardsHTML = infraItems.map(item => {
+    const req = d.required_infrastructure[item.key];
+    const cur = d.current_infrastructure[item.key];
+    const def = d.deficit[item.key];
+    const pct = d.deficit_pct[item.key];
+    const fill = Math.min(100, Math.max(0, (cur / req) * 100));
+
+    return `
+      <div class="infra-card">
+        <div class="infra-icon">${item.icon}</div>
+        <div class="infra-label">${item.label}</div>
+        <div class="infra-required">${formatNumber(req)}</div>
+        <div class="infra-current">Current: ${formatNumber(cur)}</div>
+        <div class="progress-bar-wrap" style="margin-top:6px;">
+          <div class="progress-bar-fill" style="
+            width: ${fill}%;
+            background: ${def > 0 ? (pct > 30 ? 'var(--danger)' : 'var(--warning)') : 'var(--success)'};
+          "></div>
+        </div>
+        <div class="infra-deficit ${def > 0 ? 'deficit-pos' : 'deficit-neg'}">
+          ${def > 0 ? `▼ Need ${formatNumber(def)} more (${pct}% gap)` : `▲ Surplus of ${formatNumber(Math.abs(def))}`}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // ── Model comparison table ──
+  const modelRows = Object.entries(d.all_models).map(([name, m]) => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
+      <div style="display:flex; align-items:center; gap:8px;">
+        ${m.selected ? '<span style="color:var(--success);">✓</span>' : '<span style="color:var(--text-muted);">○</span>'}
+        <span style="font-size:0.88rem; font-weight:${m.selected ? 700 : 400}; color:${m.selected ? 'var(--text-primary)' : 'var(--text-secondary)'};">${name.charAt(0).toUpperCase()+name.slice(1)}</span>
+        ${m.selected ? '<span class="badge badge-success">Selected</span>' : ''}
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:${m.r2_score > 0.9 ? 'var(--success)' : m.r2_score > 0.7 ? 'var(--warning)' : 'var(--danger)'};">
+        R² ${m.r2_score.toFixed(4)}
+      </div>
+    </div>
+  `).join("");
+
+  panel.innerHTML = `
+    <!-- Prediction Hero -->
+    <div class="prediction-hero fade-in">
+      <div>
+        <div class="pop-number">${formatNumber(d.predicted_population)}</div>
+        <div class="pop-label">
+          Predicted population of <strong>${d.city}</strong> by ${d.target_year}
+        </div>
+        <div style="margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="badge badge-purple">🗺️ ${d.state}</span>
+          <span class="badge badge-blue">⏱️ ${d.years_ahead} years ahead</span>
+          <span class="badge badge-success">±${d.years_ahead > 15 ? 20 : 10}% confidence</span>
+        </div>
+      </div>
+      <div class="model-info">
+        <div class="model-badge" style="margin-bottom:8px;">
+          🤖 Model: <strong>${d.model_used.charAt(0).toUpperCase()+d.model_used.slice(1)}</strong>
+        </div>
+        <div class="r2-score">${d.model_r2.toFixed(4)}</div>
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">R² Score (best model)</div>
+        <div style="font-size:0.78rem; color:var(--text-secondary); margin-top:8px;">
+          Range: ${formatNumber(d.confidence.low)} – ${formatNumber(d.confidence.high)}
+        </div>
+      </div>
+    </div>
+
+    <!-- Warnings -->
+    <div class="fade-in fade-in-delay-1">
+      ${warningHTML}
+    </div>
+
+    <!-- Infrastructure Cards -->
+    <div class="fade-in fade-in-delay-2">
+      <div style="font-size:0.9rem; font-weight:700; margin-bottom:14px; color:var(--text-secondary);">
+        🏗️ Infrastructure Requirements for ${d.target_year}
+      </div>
+      <div class="infra-grid">
+        ${infraCardsHTML}
+      </div>
+    </div>
+
+    <!-- Population Chart -->
+    <div class="card fade-in fade-in-delay-3">
+      <div class="chart-title">📈 Population Growth Forecast</div>
+      <div class="chart-card">
+        <canvas id="pop-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Infrastructure + Model Charts -->
+    <div class="grid-2 fade-in fade-in-delay-4">
+      <div class="card">
+        <div class="chart-title">📊 Required vs Current Infrastructure</div>
+        <div class="chart-card">
+          <canvas id="infra-chart"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chart-title">🤖 AI Model Comparison</div>
+        <div style="height:220px;">
+          <canvas id="model-chart"></canvas>
+        </div>
+        <div style="margin-top:12px;">
+          ${modelRows}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Render charts after DOM is ready
+  setTimeout(() => {
+    renderPopulationChart("pop-chart", d.historical_series, d.projection_series, d.confidence, d.target_year);
+    renderInfraChart("infra-chart", d.required_infrastructure, d.current_infrastructure, d.deficit);
+    renderModelChart("model-chart", d.all_models);
+  }, 50);
+}
+</script>
+</body>
+</html>
