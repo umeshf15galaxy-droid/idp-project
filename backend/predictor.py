@@ -50,7 +50,8 @@ def _train_exponential(years, populations):
 
 
 def _score_cv(model, years, populations, is_exp=False):
-    """Cross-validated R² (Leave-One-Out for small datasets)."""
+    """Cross-validated R² (Leave-One-Out for small datasets).
+    Falls back to full-dataset R² when CV returns NaN/negative."""
     X = _reshape(years)
     y = np.array(populations, dtype=float)
     if is_exp:
@@ -58,9 +59,25 @@ def _score_cv(model, years, populations, is_exp=False):
     n = len(years)
     if n < 3:
         return 0.0
-    cv = min(n, 5)  # max 5-fold
-    scores = cross_val_score(model, X, y, cv=cv, scoring="r2")
-    return float(np.mean(scores))
+    try:
+        cv = min(n, 5)  # max 5-fold
+        scores = cross_val_score(model, X, y, cv=cv, scoring="r2")
+        cv_mean = float(np.nanmean(scores))
+        if np.isnan(cv_mean) or cv_mean < 0:
+            raise ValueError("CV score invalid")
+        return cv_mean
+    except Exception:
+        # Fallback: direct R² on full training data
+        try:
+            model.fit(X, y)
+            y_pred = model.predict(X)
+            ss_res = np.sum((y - y_pred) ** 2)
+            ss_tot = np.sum((y - np.mean(y)) ** 2)
+            if ss_tot == 0:
+                return 1.0
+            return float(max(0.0, 1.0 - ss_res / ss_tot))
+        except Exception:
+            return 0.0
 
 
 def _predict_value(model, year, is_exp=False):
@@ -104,9 +121,9 @@ def predict_population(historical_years: list, historical_populations: list, tar
     exp_score  = _score_cv(LinearRegression(), years, pops, is_exp=True)
 
     scores = {
-        "linear":      (lin_model,  lin_score,  False),
-        "polynomial":  (poly_model, poly_score, False),
-        "exponential": (exp_model,  exp_score,  True),
+        "linear":      (lin_model,  max(0.0, lin_score),  False),
+        "polynomial":  (poly_model, max(0.0, poly_score), False),
+        "exponential": (exp_model,  max(0.0, exp_score),  True),
     }
 
     # ── Select best ──
