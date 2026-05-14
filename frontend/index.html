@@ -275,23 +275,27 @@
       </div>
     </div>
 
-    <!-- Stats ticker -->
-    <div class="stats-row fade-in fade-in-delay-3">
+    <!-- Stats ticker (animated counters) -->
+    <div class="stats-row fade-in fade-in-delay-3" id="stats-row">
       <div class="stat-item">
-        <div class="num" id="stat-cities">15</div>
+        <div class="num" id="stat-cities" data-target="15">0</div>
         <div class="lbl">Cities Covered</div>
       </div>
       <div class="stat-item">
-        <div class="num">5</div>
+        <div class="num" data-target="5">0</div>
         <div class="lbl">Decades of Data</div>
       </div>
       <div class="stat-item">
-        <div class="num">3</div>
+        <div class="num" data-target="3">0</div>
         <div class="lbl">AI Models Compared</div>
       </div>
       <div class="stat-item">
-        <div class="num">4</div>
+        <div class="num" data-target="4">0</div>
         <div class="lbl">Infrastructure Types</div>
+      </div>
+      <div class="stat-item">
+        <div class="num" data-target="75">0</div>
+        <div class="lbl">Max Prediction Year</div>
       </div>
     </div>
   </div>
@@ -444,6 +448,36 @@
     if (!city) return;
     window.location.href = `dashboard.html?city=${encodeURIComponent(city)}&year=${year}`;
   }
+
+  // ── Animated counters (IntersectionObserver) ──
+  function animateCounter(el, target, duration = 1200) {
+    const start = performance.now();
+    const update = (time) => {
+      const elapsed = time - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) requestAnimationFrame(update);
+      else el.textContent = target;
+    };
+    requestAnimationFrame(update);
+  }
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll(".num[data-target]").forEach(el => {
+          const target = parseInt(el.dataset.target);
+          animateCounter(el, target);
+        });
+        statsObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  const statsRow = document.getElementById("stats-row");
+  if (statsRow) statsObserver.observe(statsRow);
 </script>
 </body>
 </html>

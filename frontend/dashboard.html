@@ -529,7 +529,7 @@ function renderResults(d) {
     `;
   }).join("");
 
-  // ── Model comparison table ──
+  // ── Model comparison rows ──
   const modelRows = Object.entries(d.all_models).map(([name, m]) => `
     <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
       <div style="display:flex; align-items:center; gap:8px;">
@@ -540,69 +540,91 @@ function renderResults(d) {
       <div style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:${m.r2_score > 0.9 ? 'var(--success)' : m.r2_score > 0.7 ? 'var(--warning)' : 'var(--danger)'};">
         R² ${m.r2_score.toFixed(4)}
       </div>
-    </div>
-  `).join("");
+    </div>`).join("");
+
+  // ── Year-by-year projection table (every 5 years + target) ──
+  const tableRows = d.projection_series
+    .filter((r, i) => i % 5 === 0 || r.year === d.target_year)
+    .map(row => {
+      const pop = row.population;
+      const isTarget = row.year === d.target_year;
+      return `
+        <tr style="${isTarget ? 'background:rgba(124,58,237,0.08);font-weight:700;' : ''}">
+          <td style="padding:8px 12px;color:${isTarget ? 'var(--accent-purple)' : 'var(--text-secondary)'};">${row.year}${isTarget ? ' ★' : ''}</td>
+          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(pop)}</td>
+          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(Math.floor(pop/5000))}</td>
+          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(Math.floor(pop/25000))}</td>
+          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(Math.floor(pop/1200))}</td>
+        </tr>`;
+    }).join("");
+
+  const cagrColor = (d.cagr||0) > 3 ? 'var(--danger)' : (d.cagr||0) > 1.5 ? 'var(--warning)' : 'var(--success)';
 
   panel.innerHTML = `
     <!-- Prediction Hero -->
     <div class="prediction-hero fade-in">
       <div>
         <div class="pop-number">${formatNumber(d.predicted_population)}</div>
-        <div class="pop-label">
-          Predicted population of <strong>${d.city}</strong> by ${d.target_year}
-        </div>
-        <div style="margin-top: 12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <div class="pop-label">Predicted population of <strong>${d.city}</strong> by ${d.target_year}</div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
           <span class="badge badge-purple">🗺️ ${d.state}</span>
           <span class="badge badge-blue">⏱️ ${d.years_ahead} years ahead</span>
           <span class="badge badge-success">±${d.years_ahead > 15 ? 20 : 10}% confidence</span>
         </div>
       </div>
       <div class="model-info">
-        <div class="model-badge" style="margin-bottom:8px;">
-          🤖 Model: <strong>${d.model_used.charAt(0).toUpperCase()+d.model_used.slice(1)}</strong>
-        </div>
+        <div class="model-badge" style="margin-bottom:8px;">🤖 Model: <strong>${d.model_used.charAt(0).toUpperCase()+d.model_used.slice(1)}</strong></div>
         <div class="r2-score">${d.model_r2.toFixed(4)}</div>
-        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">R² Score (best model)</div>
-        <div style="font-size:0.78rem; color:var(--text-secondary); margin-top:8px;">
-          Range: ${formatNumber(d.confidence.low)} – ${formatNumber(d.confidence.high)}
-        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">R² Score (best model)</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:8px;">Range: ${formatNumber(d.confidence.low)} – ${formatNumber(d.confidence.high)}</div>
+      </div>
+    </div>
+
+    <!-- CAGR + Density chips -->
+    <div class="grid-3 fade-in fade-in-delay-1" style="gap:14px;">
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-label">Annual Growth (CAGR)</div>
+        <div class="stat-value" style="font-size:1.6rem;color:${cagrColor};">${(d.cagr||0).toFixed(2)}%</div>
+        <div class="stat-sub">per year, 2021–${d.target_year}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-label">Current Density (2021)</div>
+        <div class="stat-value" style="font-size:1.6rem;">${formatNumber(d.density_current||0)}</div>
+        <div class="stat-sub">people / km²</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏙️</div>
+        <div class="stat-label">Predicted Density (${d.target_year})</div>
+        <div class="stat-value" style="font-size:1.6rem;">${formatNumber(d.density_predicted||0)}</div>
+        <div class="stat-sub">people / km²</div>
       </div>
     </div>
 
     <!-- Warnings -->
-    <div class="fade-in fade-in-delay-1">
-      ${warningHTML}
-    </div>
+    <div class="fade-in fade-in-delay-2">${warningHTML}</div>
 
     <!-- Infrastructure Cards -->
-    <div class="fade-in fade-in-delay-2">
-      <div style="font-size:0.9rem; font-weight:700; margin-bottom:14px; color:var(--text-secondary);">
-        🏗️ Infrastructure Requirements for ${d.target_year}
-      </div>
-      <div class="infra-grid">
-        ${infraCardsHTML}
-      </div>
+    <div class="fade-in fade-in-delay-3">
+      <div style="font-size:0.9rem;font-weight:700;margin-bottom:14px;color:var(--text-secondary);">🏗️ Infrastructure Requirements for ${d.target_year}</div>
+      <div class="infra-grid">${infraCardsHTML}</div>
     </div>
 
     <!-- Population Chart -->
-    <div class="card fade-in fade-in-delay-3">
+    <div class="card fade-in fade-in-delay-4">
       <div class="chart-title">📈 Population Growth Forecast</div>
-      <div class="chart-card">
-        <canvas id="pop-chart"></canvas>
-      </div>
+      <div class="chart-card"><canvas id="pop-chart"></canvas></div>
     </div>
 
-    <!-- Infrastructure + Model Charts -->
-    <div class="grid-2 fade-in fade-in-delay-4">
+    <!-- Infra + Model Charts -->
+    <div class="grid-2 fade-in">
       <div class="card">
         <div class="chart-title">📊 Required vs Current Infrastructure</div>
-        <div class="chart-card">
-          <canvas id="infra-chart"></canvas>
-        </div>
+        <div class="chart-card"><canvas id="infra-chart"></canvas></div>
       </div>
       <div class="card">
         <div class="chart-title">🤖 AI Model Comparison</div>
-        <div style="height:220px;">
           <canvas id="model-chart"></canvas>
         </div>
         <div style="margin-top:12px;">

@@ -123,21 +123,41 @@ def predict(req: PredictRequest):
             for y, p in zip(historical_years, historical_pops)
         ]
 
+        # ── Derived metrics ──
+        base_pop      = float(historical_pops[-1])
+        pred_pop      = float(prediction["predicted_population"])
+        years_ahead   = prediction["years_ahead"]
+        area_km2      = float(infra.get("area_km2", 0)) or 1.0
+
+        # CAGR: compound annual growth rate from last known year to target year
+        cagr = round(((pred_pop / base_pop) ** (1 / max(years_ahead, 1)) - 1) * 100, 2) if base_pop > 0 else 0.0
+
+        # Population density (predicted)
+        density_predicted = round(pred_pop / area_km2)
+        density_current   = round(base_pop / area_km2)
+
         return {
             "city":        req.city,
             "state":       infra.get("state", ""),
+            "area_km2":    float(infra.get("area_km2", 0)),
             "target_year": req.target_year,
 
             # AI prediction
             "predicted_population": prediction["predicted_population"],
+            "base_population":      int(base_pop),
             "model_used":           prediction["model_used"],
             "model_r2":             prediction["model_r2"],
-            "years_ahead":          prediction["years_ahead"],
+            "years_ahead":          years_ahead,
             "all_models":           prediction["all_models"],
             "confidence":           prediction["confidence"],
 
+            # Derived metrics
+            "cagr":              cagr,
+            "density_current":   density_current,
+            "density_predicted": density_predicted,
+
             # Infrastructure
-            "current_infrastructure": current_infra,
+            "current_infrastructure":  current_infra,
             "required_infrastructure": infra_analysis["required"],
             "deficit":                 infra_analysis["deficit"],
             "deficit_pct":             infra_analysis["deficit_pct"],
