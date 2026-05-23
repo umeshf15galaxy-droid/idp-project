@@ -1,27 +1,35 @@
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 .Python
-venv/
-env/
-.env
 *.egg-info/
 dist/
 build/
-.pytest_cache/
-.mypy_cache/
-*.log
+.eggs/
+*.so
+.venv/
+venv/
+env/
 
-# Frontend
+# Node
 node_modules/
+
+# Vercel
+.vercel/
+
+# OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # IDE
 .vscode/settings.json
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+
+# Test / debug scripts
+backend/test_*.py
+
+# Logs
+*.log

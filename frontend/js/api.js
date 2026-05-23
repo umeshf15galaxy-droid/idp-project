@@ -3,7 +3,10 @@
  * All fetch calls to FastAPI live here. Frontend never touches the URL directly.
  */
 
-const API_BASE = "http://localhost:8000";
+// Auto-detect: local dev uses localhost:8000, Vercel uses relative /api
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "http://localhost:8000"
+  : "/api";
 
 /**
  * Fetch list of available cities.

@@ -3,192 +3,200 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IDP — Urban Infrastructure Prediction System</title>
-  <meta name="description" content="AI-powered population forecasting and infrastructure planning for Indian cities. Predict future schools, hospitals, buses, and roads your city will need." />
+  <title>India Live Population Clock — IDP</title>
+  <meta name="description" content="Live Worldometers-style Indian population clock and predictive urban planning platform. Run multi-model AI predictions for major cities." />
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    /* ── Hero ── */
-    .hero {
-      min-height: calc(100vh - 64px);
-      display: flex;
-      align-items: center;
+    /* ── Worldometers Ticker Styles ── */
+    .clock-hero {
+      text-align: center;
+      padding: 60px 0 40px 0;
       position: relative;
-      z-index: 1;
-      overflow: hidden;
     }
 
-    .hero-content { max-width: 680px; }
+    .clock-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
 
-    .hero-badge {
+    .clock-large {
+      font-size: clamp(3.2rem, 8vw, 5.5rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      font-family: 'Inter', monospace;
+      background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 24px;
+      text-shadow: 0 0 40px rgba(124, 58, 237, 0.2);
+    }
+
+    /* ── Live Indicator Dot ── */
+    .indicator-wrapper {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(124,58,237,0.15);
-      border: 1px solid rgba(124,58,237,0.3);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
       border-radius: 100px;
       padding: 6px 14px;
       font-size: 0.78rem;
       font-weight: 600;
-      color: #a78bfa;
+      color: #34d399;
       margin-bottom: 24px;
       letter-spacing: 0.04em;
     }
 
-    .hero-badge .dot {
+    .indicator-wrapper .dot {
       width: 6px; height: 6px;
       border-radius: 50%;
       background: #10b981;
+      box-shadow: 0 0 10px #10b981;
       animation: pulse 2s ease-in-out infinite;
     }
 
-    .hero h1 {
-      font-size: clamp(2.4rem, 5.5vw, 4rem);
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: -0.04em;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      font-size: 1.15rem;
-      line-height: 1.7;
-      max-width: 560px;
+    /* ── Side-by-Side Stat Cards ── */
+    .live-stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
       margin-bottom: 40px;
     }
 
-    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
-
-    /* ── Quick search ── */
-    .quick-search {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
-      padding: 32px;
-      backdrop-filter: blur(12px);
-      margin-top: 60px;
+    @media (max-width: 768px) {
+      .live-stats-row {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .quick-search h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
-    }
-
-    .search-row {
-      display: grid;
-      grid-template-columns: 1fr 180px auto;
-      gap: 12px;
-      align-items: end;
-    }
-
-    /* ── Stats ticker ── */
-    .stats-row {
-      display: flex;
-      gap: 48px;
-      flex-wrap: wrap;
-      margin-top: 48px;
-    }
-
-    .stat-item {}
-    .stat-item .num {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      background: var(--accent-grad);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .stat-item .lbl {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* ── Feature grid ── */
-    .feature-icon {
-      width: 48px; height: 48px;
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      margin-bottom: 16px;
-    }
-
-    .feature-card h3 { margin-bottom: 8px; font-size: 1.05rem; }
-    .feature-card p  { font-size: 0.88rem; }
-
-    /* ── Hero visual ── */
-    .hero-visual {
-      position: absolute;
-      right: -80px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 500px;
-      height: 500px;
-      pointer-events: none;
-      opacity: 0.7;
-    }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-    }
-
-    .orb-1 {
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(124,58,237,0.35), transparent);
-      top: 0; right: 0;
-      animation: float1 6s ease-in-out infinite;
-    }
-
-    .orb-2 {
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(59,130,246,0.3), transparent);
-      bottom: 0; left: 0;
-      animation: float2 8s ease-in-out infinite;
-    }
-
-    @keyframes float1 {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50%       { transform: translateY(-20px) scale(1.05); }
-    }
-    @keyframes float2 {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50%       { transform: translateY(20px) scale(0.95); }
-    }
-
-    /* ── How it works ── */
-    .step-number {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: var(--accent-grad);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-
-    .step-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 20px;
-      padding: 24px;
+    .stat-box {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      transition: var(--transition);
+      padding: 24px;
+      backdrop-filter: blur(12px);
     }
 
-    .step-row:hover {
-      border-color: var(--border-accent);
-      background: var(--bg-card-hover);
+    .stat-box-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
     }
 
-    @media (max-width: 900px) {
-      .hero-visual { display: none; }
-      .search-row { grid-template-columns: 1fr; }
+    .stat-ticker-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .stat-ticker-item:last-child {
+      margin-bottom: 0;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .stat-ticker-val {
+      font-weight: 700;
+      font-family: 'Inter', monospace;
+      color: var(--text-primary);
+    }
+
+    .stat-ticker-val.growth {
+      color: #34d399;
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.1);
+    }
+
+    /* ── Ranked Table ── */
+    .ranked-section {
+      margin-bottom: 60px;
+    }
+
+    .ranked-table-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .ranked-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    .ranked-table th {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 16px 20px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ranked-table td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .ranked-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .ranked-table tr:hover td {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .rank-num {
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    tr:nth-child(1) .rank-num { color: #f59e0b; }
+    tr:nth-child(2) .rank-num { color: #cbd5e1; }
+    tr:nth-child(3) .rank-num { color: #b45309; }
+
+    .city-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .city-pop-ticker {
+      font-family: 'Inter', monospace;
+      font-weight: 700;
+    }
+
+    /* ── General Overrides ── */
+    .quick-predict-bar {
+      margin: 40px 0;
+      background: rgba(124, 58, 237, 0.04);
+      border: 1px dashed rgba(124, 58, 237, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    @media (max-width: 768px) {
+      .quick-predict-bar {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -202,7 +210,7 @@
       <span class="gradient-text">IDP</span>
     </a>
     <ul class="nav-links">
-      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="index.html" class="active">Live Clock</a></li>
       <li><a href="dashboard.html">Dashboard</a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="sources.html">Data Sources</a></li>
@@ -211,206 +219,183 @@
   </div>
 </nav>
 
-<!-- ── Hero ── -->
-<section class="hero">
-  <div class="container">
-    <div class="hero-content fade-in">
-      <div class="hero-badge">
-        <span class="dot"></span>
-        AI-Powered Urban Planning Intelligence
+<div class="container" style="max-width: 1000px;">
+  <!-- ── Main Counter Hero ── -->
+  <section class="clock-hero">
+    <div class="indicator-wrapper">
+      <span class="dot"></span>
+      REAL-TIME ESTIMATED METRICS
+    </div>
+    <h1 class="clock-title">India Population Clock</h1>
+    <div class="clock-large" id="live-india-pop">1,450,000,000</div>
+    <p style="max-width: 580px; margin: 0 auto; color: var(--text-secondary); line-height: 1.6;">
+      Dynamic forecasting based on UN World Population Prospects and municipal density algorithms. India's growth creates unprecedented structural stress. Run predictions below.
+    </p>
+  </section>
+
+  <!-- ── Side-by-Side Ticker Cards ── -->
+  <section class="live-stats-row">
+    <!-- Today -->
+    <div class="stat-box">
+      <h3 class="stat-box-title">TODAY</h3>
+      <div class="stat-ticker-item">
+        <span>Births today</span>
+        <span class="stat-ticker-val" id="today-births">0</span>
       </div>
+      <div class="stat-ticker-item">
+        <span>Deaths today</span>
+        <span class="stat-ticker-val" id="today-deaths">0</span>
+      </div>
+      <div class="stat-ticker-item">
+        <span>Population growth today</span>
+        <span class="stat-ticker-val growth" id="today-growth">0</span>
+      </div>
+    </div>
 
-      <h1>
-        Predict Your City's<br/>
-        <span class="gradient-text">Future Infrastructure</span>
-      </h1>
+    <!-- This Year -->
+    <div class="stat-box">
+      <h3 class="stat-box-title">THIS YEAR (2025)</h3>
+      <div class="stat-ticker-item">
+        <span>Births this year</span>
+        <span class="stat-ticker-val" id="year-births">0</span>
+      </div>
+      <div class="stat-ticker-item">
+        <span>Deaths this year</span>
+        <span class="stat-ticker-val" id="year-deaths">0</span>
+      </div>
+      <div class="stat-ticker-item">
+        <span>Population growth this year</span>
+        <span class="stat-ticker-val growth" id="year-growth">0</span>
+      </div>
+    </div>
+  </section>
 
-      <p>
-        Enter any major Indian city and a target year. Our multi-model AI engine
-        forecasts population growth and calculates exactly how many schools,
-        hospitals, buses, and roads will be needed — with confidence ranges.
+  <!-- ── Quick Predict Bar ── -->
+  <section class="stat-box" style="margin-bottom: 40px;">
+    <h3 class="stat-box-title" style="margin-bottom: 8px;">⚡ Quick Planner</h3>
+    <div class="quick-predict-bar">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label" for="qs-city">Select City</label>
+        <select class="form-control" id="qs-city">
+          <option value="">Loading cities...</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label" for="qs-year">Target Year</label>
+        <select class="form-control" id="qs-year"></select>
+      </div>
+      <button class="btn btn-primary" id="qs-btn" onclick="quickPredict()" style="height: 42px;">
+        Predict Infrastructure Requirements →
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Ranked Table ── -->
+  <section class="ranked-section">
+    <div style="margin-bottom: 24px;">
+      <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;">Top Cities Ranked by Population</h2>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 4px;">
+        Estimated real-time metro populations. Click "Predict" to run full demographic analysis.
       </p>
-
-      <div class="hero-actions">
-        <a href="dashboard.html" class="btn btn-primary btn-lg" id="hero-cta-btn">
-          🚀 Start Prediction
-        </a>
-        <a href="about.html" class="btn btn-secondary btn-lg">
-          Learn How It Works
-        </a>
-      </div>
     </div>
 
-    <!-- Floating orbs -->
-    <div class="hero-visual">
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
+    <div class="ranked-table-wrapper">
+      <table class="ranked-table">
+        <thead>
+          <tr>
+            <th style="width: 60px;">Rank</th>
+            <th>City</th>
+            <th>State</th>
+            <th style="text-align: right;">2025 Population (Live)</th>
+            <th style="text-align: right; width: 140px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="ranked-cities-body">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ── Stats ── -->
-<section class="section" style="padding-top: 0;">
-  <div class="container">
-    <!-- Quick search -->
-    <div class="quick-search fade-in fade-in-delay-2">
-      <h3>⚡ Quick Prediction</h3>
-      <div class="search-row">
-        <div class="form-group">
-          <label class="form-label" for="qs-city">City</label>
-          <select class="form-control" id="qs-city">
-            <option value="">Loading cities...</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="qs-year">Target Year</label>
-          <select class="form-control" id="qs-year"></select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">&nbsp;</label>
-          <button class="btn btn-primary" id="qs-btn" onclick="quickPredict()">
-            Predict →
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Stats ticker (animated counters) -->
-    <div class="stats-row fade-in fade-in-delay-3" id="stats-row">
-      <div class="stat-item">
-        <div class="num" id="stat-cities" data-target="15">0</div>
-        <div class="lbl">Cities Covered</div>
-      </div>
-      <div class="stat-item">
-        <div class="num" data-target="5">0</div>
-        <div class="lbl">Decades of Data</div>
-      </div>
-      <div class="stat-item">
-        <div class="num" data-target="3">0</div>
-        <div class="lbl">AI Models Compared</div>
-      </div>
-      <div class="stat-item">
-        <div class="num" data-target="4">0</div>
-        <div class="lbl">Infrastructure Types</div>
-      </div>
-      <div class="stat-item">
-        <div class="num" data-target="75">0</div>
-        <div class="lbl">Max Prediction Year</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Features ── -->
-<section class="section">
-  <div class="container">
-    <div style="text-align:center; margin-bottom: 56px;">
-      <span class="badge badge-purple" style="margin-bottom: 16px;">What IDP Does</span>
-      <h2>Every Layer of the Urban Future</h2>
-      <p style="max-width: 520px; margin: 12px auto;">
-        From raw census numbers to actionable infrastructure planning — one system.
-      </p>
+  <!-- ── Features ── -->
+  <section class="section" style="padding-top: 0;">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <span class="badge badge-purple" style="margin-bottom: 16px;">V2.0 Core Upgrade</span>
+      <h2>State of the Art Urban Modeling</h2>
     </div>
 
     <div class="grid-3">
-      <div class="card feature-card fade-in fade-in-delay-1">
-        <div class="feature-icon" style="background: rgba(124,58,237,0.15);">🤖</div>
-        <h3>Multi-Model AI</h3>
-        <p>Compares Linear, Polynomial, and Exponential regression models. Selects the best by cross-validated R² score automatically.</p>
+      <div class="card feature-card">
+        <div class="feature-icon" style="background: rgba(124,58,237,0.15);">📈</div>
+        <h3>Logistic Growth (Verhulst)</h3>
+        <p>Uses scipy curves to calculate natural plateaus based on density caps — the gold standard for metropolitan projections.</p>
       </div>
-      <div class="card feature-card fade-in fade-in-delay-2">
-        <div class="feature-icon" style="background: rgba(59,130,246,0.15);">📊</div>
-        <h3>Real Census Data</h3>
-        <p>Trained on 5 decades of Indian census data (1981–2021) for 15 major cities. Predictions are grounded in reality.</p>
+      <div class="card feature-card">
+        <div class="feature-icon" style="background: rgba(6,182,212,0.15);">👶🏽</div>
+        <h3>Demographic Allocation</h3>
+        <p>Schools are allocated based strictly on the student-age cohort (24.6% of population), preventing inflated requirement figures.</p>
       </div>
-      <div class="card feature-card fade-in fade-in-delay-3">
-        <div class="feature-icon" style="background: rgba(6,182,212,0.15);">🏗️</div>
-        <h3>Infrastructure Analysis</h3>
-        <p>Translates population into required schools, hospitals, buses, and roads using official Indian urban planning norms.</p>
-      </div>
-      <div class="card feature-card fade-in fade-in-delay-1">
-        <div class="feature-icon" style="background: rgba(16,185,129,0.15);">⚠️</div>
-        <h3>Shortage Warnings</h3>
-        <p>Auto-generates critical and warning alerts when projected deficits exceed 10% or 30% of requirement.</p>
-      </div>
-      <div class="card feature-card fade-in fade-in-delay-2">
-        <div class="feature-icon" style="background: rgba(245,158,11,0.15);">📈</div>
-        <h3>Visual Charts</h3>
-        <p>Interactive population growth timeline with confidence bands, plus infrastructure comparison charts.</p>
-      </div>
-      <div class="card feature-card fade-in fade-in-delay-3">
-        <div class="feature-icon" style="background: rgba(239,68,68,0.15);">🎯</div>
-        <h3>Confidence Intervals</h3>
-        <p>Every prediction includes uncertainty ranges — ±10% for 15-year outlook, ±20% for long-term horizons.</p>
+      <div class="card feature-card">
+        <div class="feature-icon" style="background: rgba(16,185,129,0.15);">🛡️</div>
+        <h3>Ensemble Confidence</h3>
+        <p>Confidence bands are mathematically derived from the variance of all 5 competing models (Logistic, Ridge Poly, Poly, Exp, Linear).</p>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ── How it works ── -->
-<section class="section">
-  <div class="container">
-    <div style="text-align:center; margin-bottom: 48px;">
-      <span class="badge badge-blue" style="margin-bottom: 16px;">How It Works</span>
-      <h2>Three Steps. One Insight.</h2>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 16px; max-width: 700px; margin: 0 auto;">
-      <div class="step-row fade-in">
-        <div class="step-number">1</div>
-        <div>
-          <h3 style="margin-bottom: 6px;">Select Your City & Year</h3>
-          <p style="font-size: 0.9rem;">Choose from 15 major Indian cities. Set any target year from 2025 to 2100. Optionally override current infrastructure counts.</p>
-        </div>
-      </div>
-      <div class="step-row fade-in fade-in-delay-1">
-        <div class="step-number">2</div>
-        <div>
-          <h3 style="margin-bottom: 6px;">AI Runs 3 Models Simultaneously</h3>
-          <p style="font-size: 0.9rem;">Linear, Polynomial, and Exponential regression compete. The one with the highest cross-validated R² score wins and makes the final prediction.</p>
-        </div>
-      </div>
-      <div class="step-row fade-in fade-in-delay-2">
-        <div class="step-number">3</div>
-        <div>
-          <h3 style="margin-bottom: 6px;">Get Your Full Infrastructure Blueprint</h3>
-          <p style="font-size: 0.9rem;">See predicted population, required schools/hospitals/buses/roads, current deficits, and visual charts — all in one dashboard.</p>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align:center; margin-top: 48px;">
-      <a href="dashboard.html" class="btn btn-primary btn-lg" id="how-cta-btn">
-        Open Dashboard →
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ── Backend status ── -->
-<section class="section" style="padding-top: 0;">
-  <div class="container">
-    <div id="backend-status-bar" class="alert alert-info" style="max-width: 600px; margin: 0 auto; display:none;">
-      <span>⚠️</span>
-      <span>Backend is offline. <a href="about.html#setup" style="color:inherit;font-weight:700;">Start the server</a> to use predictions.</span>
-    </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <!-- ── Footer ── -->
 <footer class="footer">
   <p>
     <strong class="gradient-text">IDP</strong> — Urban Infrastructure Prediction System &nbsp;|&nbsp;
-    Built with FastAPI + scikit-learn + Chart.js &nbsp;|&nbsp;
-    Data: Census of India, World Bank
+    Worldometers Aesthetic Refresh &nbsp;|&nbsp;
+    Data: UN WPP 2024 / Census of India
   </p>
 </footer>
 
 <script src="js/api.js"></script>
 <script>
-  // ── Populate year selector ──
+  // ── Baseline City Data (Sorted by Population for Rank) ──
+  const CITIES_DB = [
+    { name: "Delhi", state: "Delhi", pop: 30222405, cagr: 2.12, tickRate: 0.19 },
+    { name: "Kolkata", state: "West Bengal", pop: 22549738, cagr: 1.15, tickRate: 0.08 },
+    { name: "Mumbai", state: "Maharashtra", pop: 20203056, cagr: 1.62, tickRate: 0.10 },
+    { name: "Bangalore", state: "Karnataka", pop: 13187098, cagr: 3.45, tickRate: 0.14 },
+    { name: "Chennai", state: "Tamil Nadu", pop: 11153205, cagr: 2.21, tickRate: 0.07 },
+    { name: "Hyderabad", state: "Telangana", pop: 9190795, cagr: 2.54, tickRate: 0.07 },
+    { name: "Ahmedabad", state: "Gujarat", pop: 7632408, cagr: 2.29, tickRate: 0.05 },
+    { name: "Surat", state: "Gujarat", pop: 6908925, cagr: 3.52, tickRate: 0.07 },
+    { name: "Pune", state: "Maharashtra", pop: 6817951, cagr: 2.50, tickRate: 0.05 },
+    { name: "Lucknow", state: "Uttar Pradesh", pop: 5052444, cagr: 3.20, tickRate: 0.05 },
+    { name: "Kanpur", state: "Uttar Pradesh", pop: 4329973, cagr: 1.85, tickRate: 0.02 },
+    { name: "Jaipur", state: "Rajasthan", pop: 4071754, cagr: 2.10, tickRate: 0.02 },
+    { name: "Indore", state: "Madhya Pradesh", pop: 3476423, cagr: 2.95, tickRate: 0.03 },
+    { name: "Nagpur", state: "Maharashtra", pop: 3257841, cagr: 1.60, tickRate: 0.01 },
+    { name: "Visakhapatnam", state: "Andhra Pradesh", pop: 1641957, cagr: 1.45, tickRate: 0.01 }
+  ];
+
+  // Sort just in case order is different
+  CITIES_DB.sort((a, b) => b.pop - a.pop);
+
+  // ── Render Ranked Table ──
+  const tbody = document.getElementById("ranked-cities-body");
+  CITIES_DB.forEach((city, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><span class="rank-num">${index + 1}</span></td>
+      <td><span class="city-name">${city.name}</span></td>
+      <td><span style="color: var(--text-secondary);">${city.state}</span></td>
+      <td style="text-align: right;"><span class="city-pop-ticker" id="city-ticker-${index}">${formatNumber(city.pop)}</span></td>
+      <td style="text-align: right;">
+        <a href="dashboard.html?city=${encodeURIComponent(city.name)}&year=2040" class="btn btn-sm btn-secondary">Predict →</a>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // ── Populate Year Dropdown ──
   const ysEl = document.getElementById("qs-year");
-  for (let y = 2025; y <= 2075; y += 5) {
+  for (let y = 2025; y <= 2060; y += 5) {
     const opt = document.createElement("option");
     opt.value = y;
     opt.textContent = y;
@@ -418,7 +403,7 @@
     ysEl.appendChild(opt);
   }
 
-  // ── Load cities ──
+  // ── Fetch Cities for dropdown from API ──
   (async () => {
     const el = document.getElementById("qs-city");
     try {
@@ -427,21 +412,75 @@
       data.cities.forEach(c => {
         const opt = document.createElement("option");
         opt.value = c; opt.textContent = c;
+        if (c === "Delhi") opt.selected = true;
         el.appendChild(opt);
       });
-      document.getElementById("stat-cities").textContent = data.count;
     } catch {
-      el.innerHTML = '<option value="">Backend offline</option>';
-      document.getElementById("backend-status-bar").style.display = "flex";
+      el.innerHTML = '<option value="">Offline (using local list)</option>';
+      CITIES_DB.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.name; opt.textContent = c.name;
+        el.appendChild(opt);
+      });
     }
   })();
 
-  // ── Backend health check ──
-  checkBackendHealth().then(ok => {
-    if (!ok) document.getElementById("backend-status-bar").style.display = "flex";
-  });
+  // ── Real-Time Live Clock Calculations ──
+  // India's estimated mid-2025 population is ~1,450,000,000.
+  // Births per day: ~63,000 (0.729 per second)
+  // Deaths per day: ~27,000 (0.312 per second)
+  // Net increase: ~36,000 (0.417 per second)
 
-  // ── Quick predict → redirect to dashboard ──
+  const indiaBasePop = 1450000000;
+  const startOfYear = new Date(new Date().getFullYear(), 0, 1).getTime();
+
+  function updateLiveClocks() {
+    const now = Date.now();
+    const secSinceNewYear = (now - startOfYear) / 1000;
+    
+    // Today's values
+    const nowObj = new Date();
+    const startOfToday = new Date(nowObj.getFullYear(), nowObj.getMonth(), nowObj.getDate()).getTime();
+    const secSinceMidnight = (now - startOfToday) / 1000;
+
+    // Daily metrics
+    const birthsToday = Math.round(secSinceMidnight * (63000 / 86400));
+    const deathsToday = Math.round(secSinceMidnight * (27000 / 86400));
+    const growthToday = birthsToday - deathsToday;
+
+    // Annual metrics
+    const birthsThisYear = Math.round(secSinceNewYear * (63000 * 365 / 31536000));
+    const deathsThisYear = Math.round(secSinceNewYear * (27000 * 365 / 31536000));
+    const growthThisYear = birthsThisYear - deathsThisYear;
+
+    // Update main clock
+    const liveIndiaPop = indiaBasePop + growthThisYear;
+    document.getElementById("live-india-pop").textContent = formatNumber(liveIndiaPop);
+
+    // Update today's elements
+    document.getElementById("today-births").textContent = formatNumber(birthsToday);
+    document.getElementById("today-deaths").textContent = formatNumber(deathsToday);
+    document.getElementById("today-growth").textContent = formatNumber(growthToday);
+
+    // Update year elements
+    document.getElementById("year-births").textContent = formatNumber(birthsThisYear);
+    document.getElementById("year-deaths").textContent = formatNumber(deathsThisYear);
+    document.getElementById("year-growth").textContent = formatNumber(growthThisYear);
+
+    // Update city live tickers (slow progress ticking)
+    CITIES_DB.forEach((city, index) => {
+      // Simulate real-time ticking by offset
+      const ticks = Math.round(secSinceMidnight * city.tickRate);
+      const currentCityPop = city.pop + ticks;
+      document.getElementById(`city-ticker-${index}`).textContent = formatNumber(currentCityPop);
+    });
+  }
+
+  // Run immediately and then start interval
+  updateLiveClocks();
+  setInterval(updateLiveClocks, 250);
+
+  // ── Redirection helper ──
   function quickPredict() {
     const city = document.getElementById("qs-city").value;
     const year = document.getElementById("qs-year").value;
@@ -449,35 +488,10 @@
     window.location.href = `dashboard.html?city=${encodeURIComponent(city)}&year=${year}`;
   }
 
-  // ── Animated counters (IntersectionObserver) ──
-  function animateCounter(el, target, duration = 1200) {
-    const start = performance.now();
-    const update = (time) => {
-      const elapsed = time - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // ease-out cubic
-      const eased = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.round(eased * target);
-      if (progress < 1) requestAnimationFrame(update);
-      else el.textContent = target;
-    };
-    requestAnimationFrame(update);
+  // ── General formatting ──
+  function formatNumber(n) {
+    return new Intl.NumberFormat("en-IN").format(n);
   }
-
-  const statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.querySelectorAll(".num[data-target]").forEach(el => {
-          const target = parseInt(el.dataset.target);
-          animateCounter(el, target);
-        });
-        statsObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.3 });
-
-  const statsRow = document.getElementById("stats-row");
-  if (statsRow) statsObserver.observe(statsRow);
 </script>
 </body>
 </html>

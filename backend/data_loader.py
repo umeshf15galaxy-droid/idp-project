@@ -77,5 +77,7 @@ def get_city_summary(city: str) -> dict:
             "buses": int(infra.get("buses", 0)),
             "roads_km": int(infra.get("roads_km", 0)),
         },
-        "current_population": int(infra.get("population_2021", 0)),
+        "current_population": int(infra.get("population_2025", 0)),
+        "latitude": float(infra.get("latitude", 0.0)),
+        "longitude": float(infra.get("longitude", 0.0)),
     }

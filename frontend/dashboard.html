@@ -7,6 +7,9 @@
   <meta name="description" content="AI-powered urban infrastructure prediction dashboard. Forecast population and infrastructure needs for any Indian city." />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     .dashboard-layout {
       display: grid;
@@ -56,8 +59,8 @@
 
     /* ── Prediction Hero Card ── */
     .prediction-hero {
-      background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(59,130,246,0.10));
-      border: 1px solid rgba(124,58,237,0.3);
+      background: linear-gradient(135deg, #f5f3ff 0%, #eff6ff 100%);
+      border: 1px solid #ddd6fe;
       border-radius: var(--radius-xl);
       padding: 32px;
       display: flex;
@@ -92,7 +95,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255,255,255,0.07);
+      background: #f1f5f9;
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 8px 14px;
@@ -257,11 +260,11 @@
           <label class="form-label" for="year-range">
             Target Year &nbsp; <span class="year-display" id="year-label">2040</span>
           </label>
-          <input type="range" id="year-range" min="2025" max="2075" value="2040" step="1"
+          <input type="range" id="year-range" min="2025" max="2060" value="2040" step="1"
                  oninput="document.getElementById('year-label').textContent=this.value" />
           <div style="display:flex; justify-content:space-between; margin-top:4px;">
             <span style="font-size:0.72rem; color:var(--text-muted);">2025</span>
-            <span style="font-size:0.72rem; color:var(--text-muted);">2075</span>
+            <span style="font-size:0.72rem; color:var(--text-muted);">2060</span>
           </div>
         </div>
 
@@ -385,7 +388,7 @@ function showCityInfo(data) {
   const title = document.getElementById("city-info-title");
   const content = document.getElementById("city-info-content");
 
-  title.innerHTML = `📊 ${data.city} — Baseline 2021`;
+  title.innerHTML = `📊 ${data.city} — Baseline 2025`;
 
   const latestPop = data.historical_population.at(-1)?.population ?? 0;
   const infra = data.current_infrastructure;
@@ -397,7 +400,7 @@ function showCityInfo(data) {
         <span>${data.state}</span>
       </div>
       <div style="display:flex; justify-content:space-between;">
-        <span style="color:var(--text-muted)">Population (2021)</span>
+        <span style="color:var(--text-muted)">Population (2025)</span>
         <span style="font-weight:700;">${formatNumber(latestPop)}</span>
       </div>
       <div style="display:flex; justify-content:space-between;">
@@ -484,6 +487,7 @@ function showError(msg) {
 }
 
 function renderResults(d) {
+  window.currentPredictionData = d; // Save globally for export
   const panel = document.getElementById("results-panel");
 
   // ── Warnings HTML ──
@@ -533,12 +537,12 @@ function renderResults(d) {
   const modelRows = Object.entries(d.all_models).map(([name, m]) => `
     <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);">
       <div style="display:flex; align-items:center; gap:8px;">
-        ${m.selected ? '<span style="color:var(--success);">✓</span>' : '<span style="color:var(--text-muted);">○</span>'}
-        <span style="font-size:0.88rem; font-weight:${m.selected ? 700 : 400}; color:${m.selected ? 'var(--text-primary)' : 'var(--text-secondary)'};">${name.charAt(0).toUpperCase()+name.slice(1)}</span>
-        ${m.selected ? '<span class="badge badge-success">Selected</span>' : ''}
+        ${m.selected ? '<span style="color:var(--success);font-weight:bold;">✓</span>' : m.valid === false ? '<span style="color:var(--danger);">✗</span>' : '<span style="color:var(--text-muted);">○</span>'}
+        <span style="font-size:0.88rem; font-weight:${m.selected ? 700 : 400}; color:${m.selected ? 'var(--text-primary)' : m.valid === false ? 'var(--danger)' : 'var(--text-secondary)'};">${name === 'ridge_poly' ? 'Ridge Polynomial (D3)' : name.charAt(0).toUpperCase()+name.slice(1)}</span>
+        ${m.selected ? '<span class="badge badge-success">Selected</span>' : m.valid === false ? '<span class="badge badge-danger">Declined ↓</span>' : ''}
       </div>
-      <div style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:${m.r2_score > 0.9 ? 'var(--success)' : m.r2_score > 0.7 ? 'var(--warning)' : 'var(--danger)'};">
-        R² ${m.r2_score.toFixed(4)}
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:${m.valid === false ? 'var(--danger)' : m.r2_score > 0.9 ? 'var(--success)' : m.r2_score > 0.7 ? 'var(--warning)' : 'var(--text-muted)'};">
+        R² ${m.r2_score.toFixed(4)}${m.valid === false ? ' — predicts decline' : ''}
       </div>
     </div>`).join("");
 
@@ -548,13 +552,20 @@ function renderResults(d) {
     .map(row => {
       const pop = row.population;
       const isTarget = row.year === d.target_year;
+      // Demographic-aware formulas matching the backend logic exactly
+      const studentPop = Math.floor(pop * 0.246);
+      const commuterPop = Math.floor(pop * (0.564 + 0.246) * 0.60);
+      const reqSchools = Math.max(1, Math.floor(studentPop / 800));
+      const reqHospitals = Math.max(1, Math.floor(pop / 10000));
+      const reqBuses = Math.max(1, Math.floor(commuterPop / 40));
+
       return `
         <tr style="${isTarget ? 'background:rgba(124,58,237,0.08);font-weight:700;' : ''}">
-          <td style="padding:8px 12px;color:${isTarget ? 'var(--accent-purple)' : 'var(--text-secondary)'};">${row.year}${isTarget ? ' ★' : ''}</td>
-          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(pop)}</td>
-          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(Math.floor(pop/5000))}</td>
-          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(Math.floor(pop/25000))}</td>
-          <td style="padding:8px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(Math.floor(pop/1200))}</td>
+          <td style="padding:10px 12px;color:${isTarget ? 'var(--accent-purple)' : 'var(--text-secondary)'};">${row.year}${isTarget ? ' ★' : ''}</td>
+          <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;">${formatNumber(pop)}</td>
+          <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#a78bfa;">${formatNumber(reqSchools)}</td>
+          <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#94a3b8;">${formatNumber(reqHospitals)}</td>
+          <td style="padding:10px 12px;font-family:'JetBrains Mono',monospace;color:#3b82f6;">${formatNumber(reqBuses)}</td>
         </tr>`;
     }).join("");
 
@@ -573,11 +584,19 @@ function renderResults(d) {
         </div>
       </div>
       <div class="model-info">
-        <div class="model-badge" style="margin-bottom:8px;">🤖 Model: <strong>${d.model_used.charAt(0).toUpperCase()+d.model_used.slice(1)}</strong></div>
+        <div class="model-badge" style="margin-bottom:8px;">🤖 Model: <strong>${d.model_used === 'ridge_poly' ? 'Ridge Poly' : d.model_used === 'compound_growth' ? 'Compound Growth' : d.model_used.charAt(0).toUpperCase()+d.model_used.slice(1)}</strong></div>
         <div class="r2-score">${d.model_r2.toFixed(4)}</div>
-        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">R² Score (best model)</div>
-        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:8px;">Range: ${formatNumber(d.confidence.low)} – ${formatNumber(d.confidence.high)}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Test R² Score</div>
+        ${d.test_mape !== undefined ? `<div style="font-size:0.8rem;color:var(--success);margin-top:4px; font-weight:600;">Test MAPE: ${d.test_mape}%</div>` : ''}
+        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:6px;">Range: ${formatNumber(d.confidence.low)} – ${formatNumber(d.confidence.high)}</div>
+        ${d.train_size !== undefined ? `<div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Trained ${d.train_size} pts · Validated ${d.test_size} pts</div>` : ''}
+        <button class="btn btn-sm" style="margin-top:12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2);" onclick="exportReport('${d.city}', ${d.target_year})">📥 Export CSV</button>
       </div>
+    </div>
+    
+    <!-- Map Container -->
+    <div class="card fade-in fade-in-delay-1" style="padding:0; overflow:hidden; border-radius:var(--radius-xl);">
+      <div id="city-map" style="height: 380px; width: 100%; background: #0f0f1a;"></div>
     </div>
 
     <!-- CAGR + Density chips -->
@@ -586,11 +605,11 @@ function renderResults(d) {
         <div class="stat-icon">📈</div>
         <div class="stat-label">Annual Growth (CAGR)</div>
         <div class="stat-value" style="font-size:1.6rem;color:${cagrColor};">${(d.cagr||0).toFixed(2)}%</div>
-        <div class="stat-sub">per year, 2021–${d.target_year}</div>
+        <div class="stat-sub">per year, 2025–${d.target_year}</div>
       </div>
       <div class="stat-card">
         <div class="stat-icon">👥</div>
-        <div class="stat-label">Current Density (2021)</div>
+        <div class="stat-label">Current Density (2025)</div>
         <div class="stat-value" style="font-size:1.6rem;">${formatNumber(d.density_current||0)}</div>
         <div class="stat-sub">people / km²</div>
       </div>
@@ -599,6 +618,75 @@ function renderResults(d) {
         <div class="stat-label">Predicted Density (${d.target_year})</div>
         <div class="stat-value" style="font-size:1.6rem;">${formatNumber(d.density_predicted||0)}</div>
         <div class="stat-sub">people / km²</div>
+      </div>
+    </div>
+
+    <!-- Demographic Cohort Breakdown Card -->
+    <div class="card fade-in fade-in-delay-2">
+      <div style="font-size:0.95rem; font-weight:700; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+        <span>👶🏽 Demographic Cohort Breakdown (${d.target_year})</span>
+        <span class="badge badge-purple">Segmented Allocations</span>
+      </div>
+      <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:20px;">
+        India's age segments applied to forecasted population of ${formatNumber(d.predicted_population)}. Ratios derived from latest demographic trends.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Infants -->
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px;">
+            <span style="font-weight:600; color:var(--text-primary);">🍼 Infants & Toddlers (Ages 0-4)</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#3b82f6;">7.5% &nbsp; (${formatNumber(d.demographics.children_0_4)} people)</span>
+          </div>
+          <div class="progress-bar-wrap" style="height:8px;">
+            <div class="progress-bar-fill" style="width: 7.5%; background:#3b82f6;"></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">
+            Required specialized pediatric healthcare infrastructure and nursery centers.
+          </div>
+        </div>
+
+        <!-- School Age -->
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px;">
+            <span style="font-weight:600; color:var(--text-primary);">🎒 School-Age Students (Ages 5-17)</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#7c3aed;">24.6% &nbsp; (${formatNumber(d.demographics.school_age_5_17)} students)</span>
+          </div>
+          <div class="progress-bar-wrap" style="height:8px;">
+            <div class="progress-bar-fill" style="width: 24.6%; background:#7c3aed;"></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">
+            <strong>Critical Planning Focus:</strong> Dictates the school allocation target (**1 school per 800 students**). Total schools needed: <strong>${formatNumber(d.required_infrastructure.schools)}</strong>.
+          </div>
+        </div>
+
+        <!-- Working Age -->
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px;">
+            <span style="font-weight:600; color:var(--text-primary);">💼 Active Workforce & Commuters (Ages 18-59)</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#06b6d4;">56.4% &nbsp; (${formatNumber(d.demographics.working_18_59)} commuters)</span>
+          </div>
+          <div class="progress-bar-wrap" style="height:8px;">
+            <div class="progress-bar-fill" style="width: 56.4%; background:#06b6d4;"></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">
+            Generates commuter transit stress. Used with student population at 60% commute index to plan buses (**1 bus per 40 commuters**).
+          </div>
+        </div>
+
+        <!-- Seniors -->
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:6px;">
+            <span style="font-weight:600; color:var(--text-primary);">👵🏽 Senior Citizens (Ages 60+)</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#10b981;">11.5% &nbsp; (${formatNumber(d.demographics.senior_60_plus)} people)</span>
+          </div>
+          <div class="progress-bar-wrap" style="height:8px;">
+            <div class="progress-bar-fill" style="width: 11.5%; background:#10b981;"></div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">
+            Demands geriatric support, low-mobility transit, and community nursing facilities.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -625,12 +713,39 @@ function renderResults(d) {
       </div>
       <div class="card">
         <div class="chart-title">🤖 AI Model Comparison</div>
+        <div style="height: 180px; position: relative;">
           <canvas id="model-chart"></canvas>
         </div>
         <div style="margin-top:12px;">
           ${modelRows}
         </div>
       </div>
+    </div>
+
+    <!-- Collapsible Year-by-Year Forecast Table -->
+    <div class="card fade-in" style="margin-top:20px;">
+      <details style="width:100%; cursor:pointer;">
+        <summary style="font-size:0.95rem; font-weight:700; color:var(--text-primary); outline:none; display:flex; justify-content:space-between; align-items:center;">
+          <span>📋 Collapsible Year-by-Year Forecast Table</span>
+          <span class="badge badge-blue">View Data Sheet</span>
+        </summary>
+        <div style="margin-top:20px; overflow-x:auto; cursor:default;" onclick="event.stopPropagation();">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.85rem;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border); color:var(--text-muted);">
+                <th style="padding:10px;">Year</th>
+                <th style="padding:10px;">Population</th>
+                <th style="padding:10px; color:#a78bfa;">Schools Needed</th>
+                <th style="padding:10px; color:#94a3b8;">Hospitals Needed</th>
+                <th style="padding:10px; color:#3b82f6;">Buses Needed</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRows}
+            </tbody>
+          </table>
+        </div>
+      </details>
     </div>
   `;
 
@@ -639,7 +754,69 @@ function renderResults(d) {
     renderPopulationChart("pop-chart", d.historical_series, d.projection_series, d.confidence, d.target_year);
     renderInfraChart("infra-chart", d.required_infrastructure, d.current_infrastructure, d.deficit);
     renderModelChart("model-chart", d.all_models);
+    
+    if (d.latitude && d.longitude) {
+      renderMap(d.latitude, d.longitude, d.city, d.density_predicted);
+    }
   }, 50);
+}
+
+// ── Leaflet Map Logic ──
+let leafletMap = null;
+let mapMarker = null;
+let mapCircle = null;
+
+function renderMap(lat, lng, city, density) {
+  if (leafletMap) {
+    leafletMap.remove();
+  }
+  // Initialize map
+  leafletMap = L.map('city-map', { zoomControl: true }).setView([lat, lng], 11);
+  
+  // CartoDB Positron (light) tile layer for clean white aesthetic
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
+  }).addTo(leafletMap);
+
+  // Add marker
+  mapMarker = L.marker([lat, lng]).addTo(leafletMap)
+    .bindPopup(`<b>${city}</b>`)
+    .openPopup();
+
+  // Add circle representing density
+  const radius = Math.min(25000, Math.max(3000, density * 1.5));
+  mapCircle = L.circle([lat, lng], {
+    color: '#7c3aed',
+    fillColor: '#7c3aed',
+    fillOpacity: 0.15,
+    radius: radius
+  }).addTo(leafletMap);
+}
+
+// ── Export CSV Logic ──
+function exportReport(city, year) {
+  const d = window.currentPredictionData;
+  if (!d) return;
+  
+  let csv = `City,${d.city}\nTarget Year,${d.target_year}\n`;
+  csv += `Predicted Population,${d.predicted_population}\n`;
+  csv += `Model Used,${d.model_used}\n\n`;
+  csv += `Infrastructure,Required,Current,Deficit\n`;
+  const keys = ["schools", "hospitals", "buses", "roads_km"];
+  keys.forEach(k => {
+    csv += `${k},${d.required_infrastructure[k]},${d.current_infrastructure[k]},${d.deficit[k]}\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `${city}_${year}_IDP_Report.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 </script>
 </body>

@@ -1,76 +1,151 @@
 city,year,population,state
-Delhi,1981,7206704,Delhi
-Delhi,1991,9420644,Delhi
-Delhi,2001,13850507,Delhi
-Delhi,2011,16314838,Delhi
-Delhi,2021,20667656,Delhi
-Mumbai,1981,9925891,Maharashtra
-Mumbai,1991,12596243,Maharashtra
-Mumbai,2001,16368084,Maharashtra
-Mumbai,2011,18414288,Maharashtra
-Mumbai,2021,21297000,Maharashtra
-Bangalore,1981,2921751,Karnataka
-Bangalore,1991,4130288,Karnataka
-Bangalore,2001,5701446,Karnataka
-Bangalore,2011,8499399,Karnataka
-Bangalore,2021,13193000,Karnataka
-Chennai,1981,4289347,Tamil Nadu
-Chennai,1991,5421985,Tamil Nadu
-Chennai,2001,6560242,Tamil Nadu
-Chennai,2011,8696010,Tamil Nadu
-Chennai,2021,10971108,Tamil Nadu
-Hyderabad,1981,2992000,Telangana
-Hyderabad,1991,4253000,Telangana
-Hyderabad,2001,5742036,Telangana
-Hyderabad,2011,7749334,Telangana
-Hyderabad,2021,10534418,Telangana
-Pune,1981,1685000,Maharashtra
-Pune,1991,2493987,Maharashtra
-Pune,2001,3760636,Maharashtra
-Pune,2011,5049968,Maharashtra
-Pune,2021,7404067,Maharashtra
-Kolkata,1981,9194018,West Bengal
-Kolkata,1991,10916272,West Bengal
-Kolkata,2001,13216546,West Bengal
-Kolkata,2011,14112536,West Bengal
-Kolkata,2021,15134000,West Bengal
-Ahmedabad,1981,2515195,Gujarat
-Ahmedabad,1991,3297655,Gujarat
-Ahmedabad,2001,4519278,Gujarat
-Ahmedabad,2011,6352254,Gujarat
-Ahmedabad,2021,8650000,Gujarat
-Surat,1981,776583,Gujarat
-Surat,1991,1517076,Gujarat
-Surat,2001,2811614,Gujarat
-Surat,2011,4585367,Gujarat
-Surat,2021,7784000,Gujarat
-Jaipur,1981,1004683,Rajasthan
-Jaipur,1991,1514425,Rajasthan
-Jaipur,2001,2322575,Rajasthan
-Jaipur,2011,3046163,Rajasthan
-Jaipur,2021,4100000,Rajasthan
-Lucknow,1981,1007604,Uttar Pradesh
-Lucknow,1991,1619115,Uttar Pradesh
-Lucknow,2001,2245509,Uttar Pradesh
-Lucknow,2011,2901474,Uttar Pradesh
-Lucknow,2021,3800000,Uttar Pradesh
-Kanpur,1981,1639064,Uttar Pradesh
-Kanpur,1991,2029889,Uttar Pradesh
-Kanpur,2001,2690486,Uttar Pradesh
-Kanpur,2011,2767031,Uttar Pradesh
-Kanpur,2021,3100000,Uttar Pradesh
-Nagpur,1981,1302066,Maharashtra
-Nagpur,1991,1661409,Maharashtra
-Nagpur,2001,2089532,Maharashtra
-Nagpur,2011,2405421,Maharashtra
-Nagpur,2021,2900000,Maharashtra
-Indore,1981,829327,Madhya Pradesh
-Indore,1991,1091674,Madhya Pradesh
-Indore,2001,1597441,Madhya Pradesh
-Indore,2011,1964086,Madhya Pradesh
-Indore,2021,2800000,Madhya Pradesh
-Thane,1981,309000,Maharashtra
-Thane,1991,803000,Maharashtra
-Thane,2001,1261517,Maharashtra
-Thane,2011,1841488,Maharashtra
-Thane,2021,2700000,Maharashtra
+Delhi,1980,5587000,Delhi
+Delhi,1985,7226000,Delhi
+Delhi,1990,9384000,Delhi
+Delhi,1995,12138000,Delhi
+Delhi,2000,15692000,Delhi
+Delhi,2005,18691000,Delhi
+Delhi,2010,21988000,Delhi
+Delhi,2015,25866000,Delhi
+Delhi,2020,30291000,Delhi
+Delhi,2025,33807000,Delhi
+Mumbai,1980,9200000,Maharashtra
+Mumbai,1985,10686000,Maharashtra
+Mumbai,1990,12355000,Maharashtra
+Mumbai,1995,14135000,Maharashtra
+Mumbai,2000,16147000,Maharashtra
+Mumbai,2005,17257000,Maharashtra
+Mumbai,2010,18257000,Maharashtra
+Mumbai,2015,19316000,Maharashtra
+Mumbai,2020,20411000,Maharashtra
+Mumbai,2025,21297000,Maharashtra
+Kolkata,1980,9100000,West Bengal
+Kolkata,1985,10004000,West Bengal
+Kolkata,1990,10974000,West Bengal
+Kolkata,1995,11992000,West Bengal
+Kolkata,2000,13097000,West Bengal
+Kolkata,2005,13595000,West Bengal
+Kolkata,2010,14003000,West Bengal
+Kolkata,2015,14423000,West Bengal
+Kolkata,2020,14850000,West Bengal
+Kolkata,2025,15334000,West Bengal
+Bangalore,1980,2810000,Karnataka
+Bangalore,1985,3400000,Karnataka
+Bangalore,1990,4040000,Karnataka
+Bangalore,1995,4750000,Karnataka
+Bangalore,2000,5580000,Karnataka
+Bangalore,2005,6790000,Karnataka
+Bangalore,2010,8300000,Karnataka
+Bangalore,2015,10140000,Karnataka
+Bangalore,2020,12330000,Karnataka
+Bangalore,2025,13981000,Karnataka
+Chennai,1980,3277000,Tamil Nadu
+Chennai,1985,3744000,Tamil Nadu
+Chennai,1990,4277000,Tamil Nadu
+Chennai,1995,4885000,Tamil Nadu
+Chennai,2000,5578000,Tamil Nadu
+Chennai,2005,6368000,Tamil Nadu
+Chennai,2010,7273000,Tamil Nadu
+Chennai,2015,8321000,Tamil Nadu
+Chennai,2020,9514000,Tamil Nadu
+Chennai,2025,11484000,Tamil Nadu
+Hyderabad,1980,2487000,Telangana
+Hyderabad,1985,3210000,Telangana
+Hyderabad,1990,4193000,Telangana
+Hyderabad,1995,4908000,Telangana
+Hyderabad,2000,5650000,Telangana
+Hyderabad,2005,6522000,Telangana
+Hyderabad,2010,7531000,Telangana
+Hyderabad,2015,8697000,Telangana
+Hyderabad,2020,10004000,Telangana
+Hyderabad,2025,10801000,Telangana
+Ahmedabad,1980,2484000,Gujarat
+Ahmedabad,1985,2971000,Gujarat
+Ahmedabad,1990,3547000,Gujarat
+Ahmedabad,1995,4140000,Gujarat
+Ahmedabad,2000,4815000,Gujarat
+Ahmedabad,2005,5494000,Gujarat
+Ahmedabad,2010,6250000,Gujarat
+Ahmedabad,2015,7109000,Gujarat
+Ahmedabad,2020,8059000,Gujarat
+Ahmedabad,2025,8681000,Gujarat
+Pune,1980,1642000,Maharashtra
+Pune,1985,1998000,Maharashtra
+Pune,1990,2430000,Maharashtra
+Pune,1995,2983000,Maharashtra
+Pune,2000,3667000,Maharashtra
+Pune,2005,4281000,Maharashtra
+Pune,2010,4960000,Maharashtra
+Pune,2015,5746000,Maharashtra
+Pune,2020,6629000,Maharashtra
+Pune,2025,7359000,Maharashtra
+Surat,1980,891000,Gujarat
+Surat,1985,1149000,Gujarat
+Surat,1990,1466000,Gujarat
+Surat,1995,1983000,Gujarat
+Surat,2000,2706000,Gujarat
+Surat,2005,3484000,Gujarat
+Surat,2010,4445000,Gujarat
+Surat,2015,5671000,Gujarat
+Surat,2020,7185000,Gujarat
+Surat,2025,7784000,Gujarat
+Jaipur,1980,1004000,Rajasthan
+Jaipur,1985,1242000,Rajasthan
+Jaipur,1990,1518000,Rajasthan
+Jaipur,1995,1823000,Rajasthan
+Jaipur,2000,2184000,Rajasthan
+Jaipur,2005,2637000,Rajasthan
+Jaipur,2010,3046000,Rajasthan
+Jaipur,2015,3525000,Rajasthan
+Jaipur,2020,3997000,Rajasthan
+Jaipur,2025,4180000,Rajasthan
+Lucknow,1980,1007000,Uttar Pradesh
+Lucknow,1985,1221000,Uttar Pradesh
+Lucknow,1990,1592000,Uttar Pradesh
+Lucknow,1995,1901000,Uttar Pradesh
+Lucknow,2000,2267000,Uttar Pradesh
+Lucknow,2005,2589000,Uttar Pradesh
+Lucknow,2010,2902000,Uttar Pradesh
+Lucknow,2015,3259000,Uttar Pradesh
+Lucknow,2020,3677000,Uttar Pradesh
+Lucknow,2025,4093000,Uttar Pradesh
+Kanpur,1980,1639000,Uttar Pradesh
+Kanpur,1985,1852000,Uttar Pradesh
+Kanpur,1990,2030000,Uttar Pradesh
+Kanpur,1995,2248000,Uttar Pradesh
+Kanpur,2000,2551000,Uttar Pradesh
+Kanpur,2005,2715000,Uttar Pradesh
+Kanpur,2010,2920000,Uttar Pradesh
+Kanpur,2015,3050000,Uttar Pradesh
+Kanpur,2020,3204000,Uttar Pradesh
+Kanpur,2025,3391000,Uttar Pradesh
+Nagpur,1980,1302000,Maharashtra
+Nagpur,1985,1450000,Maharashtra
+Nagpur,1990,1661000,Maharashtra
+Nagpur,1995,1845000,Maharashtra
+Nagpur,2000,2089000,Maharashtra
+Nagpur,2005,2267000,Maharashtra
+Nagpur,2010,2497000,Maharashtra
+Nagpur,2015,2700000,Maharashtra
+Nagpur,2020,2931000,Maharashtra
+Nagpur,2025,3265000,Maharashtra
+Indore,1980,829000,Madhya Pradesh
+Indore,1985,957000,Madhya Pradesh
+Indore,1990,1092000,Madhya Pradesh
+Indore,1995,1267000,Madhya Pradesh
+Indore,2000,1474000,Madhya Pradesh
+Indore,2005,1700000,Madhya Pradesh
+Indore,2010,1964000,Madhya Pradesh
+Indore,2015,2304000,Madhya Pradesh
+Indore,2020,2704000,Madhya Pradesh
+Indore,2025,3516000,Madhya Pradesh
+Visakhapatnam,1980,594000,Andhra Pradesh
+Visakhapatnam,1985,714000,Andhra Pradesh
+Visakhapatnam,1990,853000,Andhra Pradesh
+Visakhapatnam,1995,985000,Andhra Pradesh
+Visakhapatnam,2000,1135000,Andhra Pradesh
+Visakhapatnam,2005,1282000,Andhra Pradesh
+Visakhapatnam,2010,1431000,Andhra Pradesh
+Visakhapatnam,2015,1539000,Andhra Pradesh
+Visakhapatnam,2020,1576000,Andhra Pradesh
+Visakhapatnam,2025,1685000,Andhra Pradesh

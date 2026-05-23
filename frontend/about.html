@@ -39,62 +39,70 @@
 
     <!-- AI Engine -->
     <div class="card fade-in" style="margin-bottom: 24px;">
-      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">🤖 The AI Prediction Engine</h2>
+      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">🤖 The AI Prediction Engine (V2.0)</h2>
       <p style="margin-bottom: 16px;">
-        IDP does not use a single model. It trains three regression models on every prediction
-        and selects the one with the highest <strong>cross-validated R² score</strong>.
+        IDP trains <strong>five models simultaneously</strong> on every prediction and selects the winner by the highest
+        <strong>cross-validated R² score</strong>. Time normalization prevents numerical overflow for long-range forecasts.
+        Recent data (2000–2025) is weighted <strong>2× higher</strong> than older data to capture current urbanization velocity.
       </p>
-      <div class="grid-3" style="margin-top: 20px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
         <div style="padding: 16px; background: rgba(124,58,237,0.08); border-radius: 12px; border: 1px solid rgba(124,58,237,0.2);">
-          <div style="font-weight:700; margin-bottom:8px;">Linear Regression</div>
-          <p style="font-size:0.83rem;">Assumes population grows at a constant rate per year. Best for stable, slow-growth cities.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-weight:700;">Logistic Growth (S-Curve)</div>
+            <span class="badge badge-purple">Best for Megacities</span>
+          </div>
+          <p style="font-size:0.83rem;">Models natural population plateaus using the Verhulst equation. Estimates a carrying capacity K based on density limits.</p>
         </div>
         <div style="padding: 16px; background: rgba(59,130,246,0.08); border-radius: 12px; border: 1px solid rgba(59,130,246,0.2);">
-          <div style="font-weight:700; margin-bottom:8px;">Polynomial (Degree 2)</div>
-          <p style="font-size:0.83rem;">Captures acceleration — the rate of growth itself is increasing. Common in fast-developing cities.</p>
+          <div style="font-weight:700; margin-bottom:8px;">Ridge Polynomial (Degree 3)</div>
+          <p style="font-size:0.83rem;">L2-regularized to prevent extrapolation collapse. Best for cities with complex acceleration-then-slowdown trajectories.</p>
         </div>
         <div style="padding: 16px; background: rgba(6,182,212,0.08); border-radius: 12px; border: 1px solid rgba(6,182,212,0.2);">
+          <div style="font-weight:700; margin-bottom:8px;">Polynomial (Degree 2)</div>
+          <p style="font-size:0.83rem;">Captures simple acceleration. Works well for uniformly growing cities.</p>
+        </div>
+        <div style="padding: 16px; background: rgba(16,185,129,0.08); border-radius: 12px; border: 1px solid rgba(16,185,129,0.2);">
           <div style="font-weight:700; margin-bottom:8px;">Exponential Regression</div>
-          <p style="font-size:0.83rem;">Models compounding growth (log-linearised). Best for high-growth metros like Bangalore or Surat.</p>
+          <p style="font-size:0.83rem;">Compounding growth baseline. Log-linearized to handle large numbers. Best for hyper-growth metros like Bangalore.</p>
         </div>
       </div>
       <div class="alert alert-info" style="margin-top:20px;">
         <span>ℹ️</span>
-        <span>The winning model is shown on the dashboard along with its R² score. Values above 0.95 indicate very high predictive confidence.</span>
+        <span>The selected model and its R² score are shown on every result. Confidence bands are derived from the spread of all 5 model predictions — not a fixed percentage.</span>
       </div>
     </div>
 
     <!-- Infrastructure Formulas -->
     <div class="card fade-in fade-in-delay-1" style="margin-bottom: 24px;" id="setup">
-      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">🏗️ Infrastructure Planning Norms</h2>
+      <h2 style="margin-bottom: 16px; font-size: 1.3rem;">🏗️ Demographic-Aware Infrastructure Norms</h2>
       <p style="margin-bottom: 20px;">
-        Once population is predicted, IDP applies Indian Urban Planning norms to calculate
-        required infrastructure. These are based on Ministry of Urban Development guidelines.
+        A key V2.0 upgrade: infrastructure is now allocated to the <strong>correct demographic segment</strong>, not the total population.
+        Schools go to students only (ages 5–17, 24.6% of population). Buses go to commuters only. This prevents over-estimating needs.
       </p>
       <div class="grid-2">
         <div class="stat-card">
           <div class="stat-icon">🏫</div>
           <div class="stat-label">Schools</div>
-          <div class="stat-value" style="font-size:1.4rem;">1 per 5,000</div>
-          <div class="stat-sub">people (UDPFI Norms)</div>
+          <div class="stat-value" style="font-size:1.4rem; color:#a78bfa;">1 per 800</div>
+          <div class="stat-sub">school-age students (URDPFI)</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon">🏥</div>
           <div class="stat-label">Hospitals</div>
-          <div class="stat-value" style="font-size:1.4rem;">1 per 25,000</div>
-          <div class="stat-sub">people (NHP Standard)</div>
+          <div class="stat-value" style="font-size:1.4rem;">1 per 10,000</div>
+          <div class="stat-sub">total population (WHO)</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon">🚌</div>
           <div class="stat-label">Buses</div>
-          <div class="stat-value" style="font-size:1.4rem;">1 per 1,200</div>
-          <div class="stat-sub">people (MoUD Transport)</div>
+          <div class="stat-value" style="font-size:1.4rem; color:#3b82f6;">1 per 40</div>
+          <div class="stat-sub">daily commuters (NUTP)</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon">🛣️</div>
           <div class="stat-label">Roads</div>
           <div class="stat-value" style="font-size:1.4rem;">1 km per 800</div>
-          <div class="stat-sub">people (IRC:SP:20)</div>
+          <div class="stat-sub">total population (URDPFI)</div>
         </div>
       </div>
     </div>
@@ -145,7 +153,7 @@ python -m http.server 3000</pre>
 </section>
 
 <footer class="footer">
-  <p><strong class="gradient-text">IDP</strong> — Urban Infrastructure Prediction System &nbsp;|&nbsp; V1.0</p>
+  <p><strong class="gradient-text">IDP</strong> — Urban Infrastructure Prediction System &nbsp;|&nbsp; V2.0</p>
 </footer>
 </body>
 </html>

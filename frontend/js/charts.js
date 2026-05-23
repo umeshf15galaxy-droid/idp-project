@@ -4,7 +4,7 @@
  */
 
 // ── Chart defaults ──
-Chart.defaults.color = "#94a3b8";
+Chart.defaults.color = "#475569";
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.font.size = 12;
 
@@ -139,10 +139,13 @@ function renderPopulationChart(canvasId, historicalSeries, projectionSeries, con
           },
         },
         tooltip: {
-          backgroundColor: "rgba(15,15,26,0.95)",
-          borderColor: "rgba(255,255,255,0.1)",
+          backgroundColor: "rgba(255,255,255,0.98)",
+          titleColor: "#0f172a",
+          bodyColor: "#475569",
+          borderColor: "#e2e8f0",
           borderWidth: 1,
           padding: 12,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
           callbacks: {
             label: ctx => ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)}`,
           },
@@ -150,11 +153,11 @@ function renderPopulationChart(canvasId, historicalSeries, projectionSeries, con
       },
       scales: {
         x: {
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "#f1f5f9" },
           ticks: { color: "#64748b" },
         },
         y: {
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "#f1f5f9" },
           ticks: {
             color: "#64748b",
             callback: v => formatNumberShort(v),
@@ -212,8 +215,10 @@ function renderInfraChart(canvasId, required, current, deficit) {
       plugins: {
         legend: { labels: { usePointStyle: true, pointStyle: "circle" } },
         tooltip: {
-          backgroundColor: "rgba(15,15,26,0.95)",
-          borderColor: "rgba(255,255,255,0.1)",
+          backgroundColor: "rgba(255,255,255,0.98)",
+          titleColor: "#0f172a",
+          bodyColor: "#475569",
+          borderColor: "#e2e8f0",
           borderWidth: 1,
           padding: 12,
           callbacks: {
@@ -231,12 +236,12 @@ function renderInfraChart(canvasId, required, current, deficit) {
       },
       scales: {
         x: {
-          grid: { color: "rgba(255,255,255,0.04)" },
+          grid: { color: "#f1f5f9" },
           ticks: { color: "#64748b", callback: v => formatNumberShort(v) },
         },
         y: {
           grid: { display: false },
-          ticks: { color: "#94a3b8" },
+          ticks: { color: "#475569" },
         },
       },
     },

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Data Sources — IDP</title>
-  <meta name="description" content="IDP data sources: Census of India, World Bank, Ministry of Urban Development datasets used for population prediction." />
+  <meta name="description" content="IDP data sources: Census of India, UN WPP, URDPFI and WHO standards used for urban infrastructure prediction." />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -43,99 +43,169 @@
       <div style="display:flex; flex-direction:column; gap:14px; font-size:0.88rem;">
         <div class="card card-sm" style="display:flex; justify-content:space-between; align-items:start; gap:16px;">
           <div>
-            <div style="font-weight:700; margin-bottom:4px;">Census of India</div>
-            <p style="font-size:0.82rem;">Primary source. Decadal census data (1981, 1991, 2001, 2011, 2021) for urban agglomerations. Conducted by Office of the Registrar General & Census Commissioner.</p>
+            <div style="font-weight:700; margin-bottom:4px;">UN World Urbanization Prospects (WUP) 2024</div>
+            <p style="font-size:0.82rem;">Primary source for the dense 5-year interval dataset (1980–2025). Uses "urban agglomeration" boundaries — the entire continuous metro area — for planning accuracy. Published by the UN DESA Population Division.</p>
           </div>
           <span class="badge badge-purple" style="flex-shrink:0;">Primary</span>
         </div>
         <div class="card card-sm" style="display:flex; justify-content:space-between; align-items:start; gap:16px;">
           <div>
-            <div style="font-weight:700; margin-bottom:4px;">World Bank Open Data</div>
-            <p style="font-size:0.82rem;">Urban population and growth rate datasets used for cross-validation of Census figures. API: data.worldbank.org</p>
+            <div style="font-weight:700; margin-bottom:4px;">Census of India (2001, 2011, 2021)</div>
+            <p style="font-size:0.82rem;">Used to ground and verify historical data points. Conducted decennially by the Office of the Registrar General &amp; Census Commissioner, Government of India.</p>
           </div>
-          <span class="badge badge-blue" style="flex-shrink:0;">Secondary</span>
+          <span class="badge badge-blue" style="flex-shrink:0;">Verified By</span>
         </div>
         <div class="card card-sm" style="display:flex; justify-content:space-between; align-items:start; gap:16px;">
           <div>
-            <div style="font-weight:700; margin-bottom:4px;">UN World Urbanization Prospects 2024</div>
-            <p style="font-size:0.82rem;">Used to verify long-term urban growth trajectory for major metropolitan regions.</p>
+            <div style="font-weight:700; margin-bottom:4px;">Worldometers — Largest Cities in India</div>
+            <p style="font-size:0.82rem;">Used to cross-validate 2025 population estimates for all 15 cities and to calibrate the live-ticker simulation on the homepage.</p>
           </div>
           <span class="badge badge-blue" style="flex-shrink:0;">Reference</span>
         </div>
       </div>
     </div>
 
-    <!-- Infrastructure Data -->
+    <!-- Demographic Breakdown -->
     <div class="card fade-in fade-in-delay-1" style="margin-bottom:24px;">
-      <h2 style="font-size:1.2rem; margin-bottom:16px;">🏗️ Infrastructure Data</h2>
-      <div style="display:flex; flex-direction:column; gap:14px; font-size:0.88rem;">
-        <div class="card card-sm">
-          <div style="font-weight:700; margin-bottom:4px;">Ministry of Education — UDISE+ 2021-22</div>
-          <p style="font-size:0.82rem;">School counts per city. Unified District Information System for Education Plus tracks all government and private schools.</p>
-        </div>
-        <div class="card card-sm">
-          <div style="font-weight:700; margin-bottom:4px;">National Health Mission — Health Facility Registry</div>
-          <p style="font-size:0.82rem;">Hospital and clinic counts per district, aggregated to city level. Includes public and empanelled private facilities.</p>
-        </div>
-        <div class="card card-sm">
-          <div style="font-weight:700; margin-bottom:4px;">Ministry of Urban Development — City Transport Reports</div>
-          <p style="font-size:0.82rem;">Public bus fleet sizes for major cities from annual transport reports and NUTP (National Urban Transport Policy) surveys.</p>
-        </div>
-        <div class="card card-sm">
-          <div style="font-weight:700; margin-bottom:4px;">Ministry of Road Transport & Highways</div>
-          <p style="font-size:0.82rem;">Road network length (urban) from the annual report on road statistics in India.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Planning Standards -->
-    <div class="card fade-in fade-in-delay-2" style="margin-bottom:24px;">
-      <h2 style="font-size:1.2rem; margin-bottom:16px;">📐 Planning Norms & Standards</h2>
+      <h2 style="font-size:1.2rem; margin-bottom:16px;">👶🏽 Demographic Ratios</h2>
+      <p style="font-size:0.85rem; margin-bottom:16px;">India's age-structure is a critical input to the planning engine. These ratios are applied to the forecasted population to allocate infrastructure correctly — schools go only to students, not to the total population.</p>
       <div style="overflow-x:auto;">
         <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
           <thead>
             <tr style="border-bottom: 2px solid var(--border);">
-              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-weight:700; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Metric</th>
-              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-weight:700; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Norm Used</th>
-              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-weight:700; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Standard</th>
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Cohort</th>
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Age Range</th>
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Share</th>
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Source</th>
             </tr>
           </thead>
           <tbody>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding:12px 8px;">🏫 Schools</td>
-              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">1 per 5,000 people</td>
-              <td style="padding:12px 8px; color:var(--text-secondary);">UDPFI Guidelines (MoUD)</td>
+              <td style="padding:12px 8px;">🍼 Infants</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">0–4 yrs</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#3b82f6;">7.5%</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">World Bank, 2024</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding:12px 8px;">🏥 Hospitals</td>
-              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">1 per 25,000 people</td>
-              <td style="padding:12px 8px; color:var(--text-secondary);">National Health Policy 2017</td>
+              <td style="padding:12px 8px;">🎒 School-Age</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">5–17 yrs</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#a78bfa;">24.6%</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">Census of India, 2021</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding:12px 8px;">🚌 Buses</td>
-              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">1 per 1,200 people</td>
-              <td style="padding:12px 8px; color:var(--text-secondary);">NUTP / MoUD Transport Norms</td>
+              <td style="padding:12px 8px;">💼 Workforce</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">18–59 yrs</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#06b6d4;">56.4%</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">Census of India, 2021</td>
             </tr>
             <tr>
-              <td style="padding:12px 8px;">🛣️ Roads</td>
-              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">1 km per 800 people</td>
-              <td style="padding:12px 8px; color:var(--text-secondary);">IRC:SP:20 Rural Roads Manual</td>
+              <td style="padding:12px 8px;">👵🏽 Seniors</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace;">60+ yrs</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#10b981;">11.5%</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">Census of India, 2021</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
+    <!-- Planning Standards -->
+    <div class="card fade-in fade-in-delay-2" style="margin-bottom:24px;">
+      <h2 style="font-size:1.2rem; margin-bottom:16px;">📐 Planning Norms &amp; Standards (Actual Backend Values)</h2>
+      <p style="font-size:0.85rem; margin-bottom:16px;">These are the exact ratios used in the prediction engine — not approximations. Each is referenced to an official Indian or WHO standard.</p>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border);">
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Metric</th>
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Served Population</th>
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Ratio</th>
+              <th style="text-align:left; padding:12px 8px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Standard</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding:12px 8px;">🏫 Schools</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">Students only (5–17 yrs, 24.6%)</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#a78bfa;">1 per 800 students</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">URDPFI Guidelines (MoUD)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding:12px 8px;">🏥 Hospitals</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">Total population</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#94a3b8;">1 per 10,000 people</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">WHO (3.5 beds/1,000)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding:12px 8px;">🚌 Buses</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">Commuters: (workforce + students) × 60%</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#3b82f6;">1 per 40 commuters</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">NUTP / MoUD Transport Policy</td>
+            </tr>
+            <tr>
+              <td style="padding:12px 8px;">🛣️ Roads</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">Total population</td>
+              <td style="padding:12px 8px; font-family:'JetBrains Mono',monospace; color:#10b981;">1 km per 800 people</td>
+              <td style="padding:12px 8px; color:var(--text-secondary);">URDPFI Guidelines (MoUD)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AI Models -->
+    <div class="card fade-in fade-in-delay-2" style="margin-bottom:24px;">
+      <h2 style="font-size:1.2rem; margin-bottom:16px;">🤖 AI Prediction Models</h2>
+      <p style="font-size:0.85rem; margin-bottom:16px;">Five models compete for each prediction. The one with the highest cross-validated R² score wins and makes the final forecast.</p>
+      <div style="display:flex; flex-direction:column; gap:12px; font-size:0.85rem;">
+        <div class="card card-sm">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div style="font-weight:700;">Logistic Growth (Verhulst S-Curve)</div>
+            <span class="badge badge-purple">Gold Standard</span>
+          </div>
+          <p style="font-size:0.82rem;">Models natural population plateaus. Uses <code style="background:rgba(255,255,255,0.07); padding:2px 6px; border-radius:4px;">scipy.optimize.curve_fit</code> to estimate a carrying capacity K — the city's maximum sustainable population given land area constraints.</p>
+        </div>
+        <div class="card card-sm">
+          <div style="font-weight:700; margin-bottom:6px;">Ridge Polynomial Regression (Degree 3)</div>
+          <p style="font-size:0.82rem;">Regularized polynomial using L2 penalty (alpha=1.0) to prevent wild extrapolation at longer time horizons. Best for cities with complex growth trajectories (rapid acceleration followed by slowdown).</p>
+        </div>
+        <div class="card card-sm">
+          <div style="font-weight:700; margin-bottom:6px;">Polynomial Regression (Degree 2)</div>
+          <p style="font-size:0.82rem;">Captures simple acceleration patterns. Works well for uniformly growing cities with consistent decade-over-decade improvement.</p>
+        </div>
+        <div class="card card-sm">
+          <div style="font-weight:700; margin-bottom:6px;">Exponential Regression</div>
+          <p style="font-size:0.82rem;">Compounding growth baseline. Fitted using log-linearization to handle very large population values without overflow.</p>
+        </div>
+        <div class="card card-sm">
+          <div style="font-weight:700; margin-bottom:6px;">Linear Regression</div>
+          <p style="font-size:0.82rem;">Simple baseline. Rarely wins, but serves as a sanity check and lower-bound anchor for the ensemble confidence interval.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- City Coverage -->
     <div class="card fade-in fade-in-delay-3">
-      <h2 style="font-size:1.2rem; margin-bottom:16px;">🗺️ Cities in V1 Dataset</h2>
+      <h2 style="font-size:1.2rem; margin-bottom:16px;">🗺️ Cities in Dataset (V2.0)</h2>
       <div style="display:flex; flex-wrap:wrap; gap:8px;">
-        ${["Delhi","Mumbai","Bangalore","Chennai","Hyderabad","Pune","Kolkata","Ahmedabad","Surat","Jaipur","Lucknow","Kanpur","Nagpur","Indore","Thane"].map(c =>
-          `<span class="badge badge-purple">${c}</span>`
-        ).join("")}
+        <span class="badge badge-purple">Delhi</span>
+        <span class="badge badge-purple">Mumbai</span>
+        <span class="badge badge-purple">Kolkata</span>
+        <span class="badge badge-purple">Bangalore</span>
+        <span class="badge badge-purple">Chennai</span>
+        <span class="badge badge-purple">Hyderabad</span>
+        <span class="badge badge-purple">Ahmedabad</span>
+        <span class="badge badge-purple">Pune</span>
+        <span class="badge badge-purple">Surat</span>
+        <span class="badge badge-purple">Jaipur</span>
+        <span class="badge badge-purple">Lucknow</span>
+        <span class="badge badge-purple">Kanpur</span>
+        <span class="badge badge-purple">Nagpur</span>
+        <span class="badge badge-purple">Indore</span>
+        <span class="badge badge-purple">Visakhapatnam</span>
       </div>
       <p style="font-size:0.82rem; margin-top:16px;">
-        V2 will expand to 50+ cities using automated data ingestion from the Census API.
+        Each city has <strong>10 historical data points</strong> spanning 1980–2025 at 5-year intervals, sourced from UN WUP 2024 estimates. All boundaries use the contiguous urban agglomeration definition rather than the smaller municipal corporation limits.
       </p>
     </div>
 
@@ -143,16 +213,8 @@
 </section>
 
 <footer class="footer">
-  <p><strong class="gradient-text">IDP</strong> — Data transparency is core to this project. All sources are public and free.</p>
+  <p><strong class="gradient-text">IDP</strong> — Data transparency is core to this project. All sources are public and freely available.</p>
 </footer>
 
-<script>
-// Render city badges dynamically so we don't have to hard-code them in HTML
-const cities = ["Delhi","Mumbai","Bangalore","Chennai","Hyderabad","Pune","Kolkata","Ahmedabad","Surat","Jaipur","Lucknow","Kanpur","Nagpur","Indore","Thane"];
-const container = document.querySelector(".card:last-child div[style*='flex-wrap']");
-if (container) {
-  container.innerHTML = cities.map(c => `<span class="badge badge-purple">${c}</span>`).join("");
-}
-</script>
 </body>
 </html>

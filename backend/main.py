@@ -50,7 +50,7 @@ class CurrentInfrastructure(BaseModel):
 
 class PredictRequest(BaseModel):
     city:        str = Field(..., example="Bangalore")
-    target_year: int = Field(..., ge=2025, le=2100, example=2040)
+    target_year: int = Field(..., ge=2025, le=2060, example=2040)
     current_infrastructure: Optional[CurrentInfrastructure] = None  # override CSV defaults
 
 
@@ -140,6 +140,8 @@ def predict(req: PredictRequest):
             "city":        req.city,
             "state":       infra.get("state", ""),
             "area_km2":    float(infra.get("area_km2", 0)),
+            "latitude":    float(infra.get("latitude", 0.0)),
+            "longitude":   float(infra.get("longitude", 0.0)),
             "target_year": req.target_year,
 
             # AI prediction
@@ -163,6 +165,8 @@ def predict(req: PredictRequest):
             "deficit_pct":             infra_analysis["deficit_pct"],
             "warnings":                infra_analysis["warnings"],
             "norms_used":              infra_analysis["norms_used"],
+            "demographics":            infra_analysis["demographics"],
+            "segment_info":            infra_analysis["segment_info"],
 
             # Chart data
             "historical_series":   historical_series,
