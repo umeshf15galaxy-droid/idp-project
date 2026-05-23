@@ -3,8 +3,8 @@
  * All fetch calls to FastAPI live here. Frontend never touches the URL directly.
  */
 
-// Local dev → localhost:8000 | Production → Render.com backend URL
-const RENDER_BACKEND_URL = "https://idp-backend.onrender.com"; // ← updated after Render deploy
+// Local dev → localhost:8000 | Production → Render.com backend
+const RENDER_BACKEND_URL = "https://idp-backend-r293.onrender.com";
 
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://localhost:8000"
