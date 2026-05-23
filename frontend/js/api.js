@@ -3,10 +3,12 @@
  * All fetch calls to FastAPI live here. Frontend never touches the URL directly.
  */
 
-// Auto-detect: local dev uses localhost:8000, Vercel uses relative /api
+// Local dev → localhost:8000 | Production → Render.com backend URL
+const RENDER_BACKEND_URL = "https://idp-backend.onrender.com"; // ← updated after Render deploy
+
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
   ? "http://localhost:8000"
-  : "/api";
+  : RENDER_BACKEND_URL;
 
 /**
  * Fetch list of available cities.

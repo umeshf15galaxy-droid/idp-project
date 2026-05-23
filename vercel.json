@@ -1,47 +1,30 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static"
-    }
-  ],
+  "outputDirectory": "frontend",
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "api/index.py"
+      "src": "/css/(.*)",
+      "dest": "/css/$1"
     },
     {
-      "src": "/static/(.*)",
-      "dest": "frontend/$1"
+      "src": "/js/(.*)",
+      "dest": "/js/$1"
     },
     {
-      "src": "/(.*\\.(css|js|png|jpg|ico|svg|woff|woff2|ttf))",
-      "dest": "frontend/$1"
+      "src": "/dashboard.html",
+      "dest": "/dashboard.html"
     },
     {
-      "src": "/dashboard",
-      "dest": "frontend/dashboard.html"
+      "src": "/about.html",
+      "dest": "/about.html"
     },
     {
-      "src": "/about",
-      "dest": "frontend/about.html"
+      "src": "/sources.html",
+      "dest": "/sources.html"
     },
     {
-      "src": "/sources",
-      "dest": "frontend/sources.html"
-    },
-    {
-      "src": "/(.*)\\.html",
-      "dest": "frontend/$1.html"
-    },
-    {
-      "src": "/",
-      "dest": "frontend/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
