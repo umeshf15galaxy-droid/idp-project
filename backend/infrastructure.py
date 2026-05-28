@@ -24,11 +24,40 @@ DEMOGRAPHICS = {
 }
 
 # ─────────────────────────────────────────────
+# Modal Split (India, MoUD Urban Mobility Report 2024)
+# What % of commuters actually use PUBLIC BUSES (not private vehicles)
+#
+# Private two-wheelers:  ~38% of all trips
+# Private cars:          ~12% of all trips
+# Public buses:          ~25-38% (varies by city size)
+# Walk / cycle:          ~18%
+# Metro / suburban rail: ~7% (mainly Tier 1)
+#
+# Tier 1 metros have metro rail/local trains, so bus share is LOWER.
+# Tier 2 cities depend mainly on buses, so bus share is HIGHER.
+# ─────────────────────────────────────────────
+
+MODAL_SPLIT = {
+    "tier1": {
+        "bus_share":     0.28,    # 28% of commuters use public buses
+        "private_share": 0.50,   # 50% use private vehicles (bike/car)
+        "walk_cycle":    0.15,   # 15% walk or cycle
+        "other_transit": 0.07,  # 7% metro / suburban rail
+    },
+    "tier2": {
+        "bus_share":     0.38,    # 38% of commuters use public buses
+        "private_share": 0.45,   # 45% use private vehicles
+        "walk_cycle":    0.17,   # 17% walk or cycle
+        "other_transit": 0.00,  # 0% (no metro in most Tier 2)
+    },
+}
+
+# ─────────────────────────────────────────────
 # Infrastructure Norms — differentiated by city tier
 # ─────────────────────────────────────────────
 #
-# TIER 1 METROS: Higher density, so smaller per-person norms (more people share each facility)
-# TIER 2 CITIES: Lower density, so larger per-person norms (more spread out)
+# TIER 1 METROS: Higher density, so smaller per-person norms
+# TIER 2 CITIES: Lower density, so larger per-person norms
 #
 # Sources: URDPFI Guidelines 2014 (MoUD), WHO Norms, Smart Cities Mission
 
@@ -36,44 +65,44 @@ NORMS = {
     "tier1": {
         "schools": {
             "segment":    "school_age_5_17",
-            "ratio":      1200,      # 1 school per 1200 students (dense city — multi-shift schools)
+            "ratio":      1200,
             "label":      "1 school per 1,200 students (Tier 1 Metro norm)",
         },
         "hospitals": {
             "segment":    "total",
-            "ratio":      8000,      # 1 hospital per 8,000 people (WHO for high-density cities)
+            "ratio":      8000,
             "label":      "1 hospital per 8,000 people (WHO, Tier 1 Metro)",
         },
         "buses": {
-            "segment":    "commuters",
-            "ratio":      50,        # 1 bus per 50 commuters (Metro has more transit options)
-            "label":      "1 bus per 50 commuters (Tier 1 Metro)",
+            "segment":    "bus_commuters",   # Only people who ACTUALLY use buses
+            "ratio":      50,                # 1 bus per 50 daily passengers (bus capacity ~50)
+            "label":      "1 bus per 50 public-bus commuters (28% modal split, Tier 1)",
         },
         "roads_km": {
             "segment":    "total",
-            "ratio":      1000,      # 1 km road per 1,000 people (dense, needs more roads)
+            "ratio":      1000,
             "label":      "1 km road per 1,000 people (Tier 1 Metro)",
         },
     },
     "tier2": {
         "schools": {
             "segment":    "school_age_5_17",
-            "ratio":      800,       # 1 school per 800 students (URDPFI standard)
+            "ratio":      800,
             "label":      "1 school per 800 students (Tier 2 City norm)",
         },
         "hospitals": {
             "segment":    "total",
-            "ratio":      10000,     # 1 hospital per 10,000 people (WHO standard)
+            "ratio":      10000,
             "label":      "1 hospital per 10,000 people (WHO standard)",
         },
         "buses": {
-            "segment":    "commuters",
-            "ratio":      40,        # 1 bus per 40 commuters
-            "label":      "1 bus per 40 commuters (Tier 2 City)",
+            "segment":    "bus_commuters",   # Only people who ACTUALLY use buses
+            "ratio":      50,                # 1 bus per 50 daily passengers
+            "label":      "1 bus per 50 public-bus commuters (38% modal split, Tier 2)",
         },
         "roads_km": {
             "segment":    "total",
-            "ratio":      800,       # 1 km road per 800 people
+            "ratio":      800,
             "label":      "1 km road per 800 people (Tier 2 City norm)",
         },
     },
@@ -84,15 +113,22 @@ NORMS = {
 # Core Calculation Functions
 # ─────────────────────────────────────────────
 
-def _get_segment_population(total_pop: int, segment: str) -> int:
+def _get_segment_population(total_pop: int, segment: str, city_tier: str = "tier2") -> int:
     """Calculate the population segment relevant to an infra type."""
     if segment == "total":
         return total_pop
     elif segment == "school_age_5_17":
         return int(total_pop * DEMOGRAPHICS["school_age_5_17"])
     elif segment == "commuters":
+        # All commuters (working-age + students who travel daily)
         base = total_pop * (DEMOGRAPHICS["working_18_59"] + DEMOGRAPHICS["school_age_5_17"])
-        return int(base * 0.60)   # 60% of working+student pop commutes
+        return int(base * 0.75)   # 75% of eligible pop actually commutes
+    elif segment == "bus_commuters":
+        # KEY FIX: Only count people who actually take PUBLIC BUSES
+        # Many people have private vehicles (bikes, cars, autos)
+        all_commuters = total_pop * (DEMOGRAPHICS["working_18_59"] + DEMOGRAPHICS["school_age_5_17"]) * 0.75
+        bus_share = MODAL_SPLIT.get(city_tier, MODAL_SPLIT["tier2"])["bus_share"]
+        return int(all_commuters * bus_share)
     elif segment in DEMOGRAPHICS:
         return int(total_pop * DEMOGRAPHICS[segment])
     return total_pop
@@ -100,10 +136,17 @@ def _get_segment_population(total_pop: int, segment: str) -> int:
 
 def calculate_required(total_population: int, city_tier: str = "tier2") -> tuple:
     """
-    Calculate required infrastructure using city-tier-adjusted norms.
-    Returns (required_counts, demographic_breakdown, segment_info_used).
+    Calculate required infrastructure using city-tier-adjusted norms
+    and real modal split data for bus calculations.
     """
-    norms = NORMS.get(city_tier, NORMS["tier2"])
+    norms  = NORMS.get(city_tier, NORMS["tier2"])
+    splits = MODAL_SPLIT.get(city_tier, MODAL_SPLIT["tier2"])
+
+    all_commuters  = int(total_population
+                        * (DEMOGRAPHICS["working_18_59"] + DEMOGRAPHICS["school_age_5_17"])
+                        * 0.75)
+    bus_commuters  = int(all_commuters * splits["bus_share"])
+    priv_commuters = int(all_commuters * splits["private_share"])
 
     # Demographic breakdown
     breakdown = {
@@ -112,16 +155,18 @@ def calculate_required(total_population: int, city_tier: str = "tier2") -> tuple
         "school_age_5_17": int(total_population * DEMOGRAPHICS["school_age_5_17"]),
         "working_18_59":   int(total_population * DEMOGRAPHICS["working_18_59"]),
         "senior_60_plus":  int(total_population * DEMOGRAPHICS["senior_60_plus"]),
-        "commuters":       int(total_population
-                               * (DEMOGRAPHICS["working_18_59"] + DEMOGRAPHICS["school_age_5_17"])
-                               * 0.60),
+        "all_commuters":   all_commuters,
+        "bus_commuters":   bus_commuters,
+        "private_vehicle_commuters": priv_commuters,
+        "bus_modal_split_pct": int(splits["bus_share"] * 100),
+        "private_modal_split_pct": int(splits["private_share"] * 100),
     }
 
-    required    = {}
+    required     = {}
     segment_used = {}
 
     for key, norm in norms.items():
-        seg_pop = _get_segment_population(total_population, norm["segment"])
+        seg_pop = _get_segment_population(total_population, norm["segment"], city_tier)
         required[key] = max(1, int(seg_pop / norm["ratio"]))
         segment_used[key] = {
             "segment_name":       norm["segment"],
