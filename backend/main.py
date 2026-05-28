@@ -42,29 +42,14 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ─────────────────────────────────────────────
-# CORS — only allow known trusted origins
+# CORS — open to all origins (rate limiting is the real protection)
+# CORS only blocks browsers, not scripts/bots, so restricting origins
+# gives false security while breaking legitimate Vercel preview URLs.
 # ─────────────────────────────────────────────
-
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-    # Vercel production domains (adjust if your Vercel URL is different)
-    "https://idp-project.vercel.app",
-    "https://idp-project-git-main.vercel.app",
-    # Allow any *.vercel.app subdomain (covers preview deployments)
-    "https://*.vercel.app",
-]
-
-# In development or if ALLOW_ALL_ORIGINS env var is set, allow all
-if os.getenv("ALLOW_ALL_ORIGINS", "false").lower() == "true":
-    ALLOWED_ORIGINS = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"https://.*\.vercel\.app",  # covers all Vercel preview URLs
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type", "Accept"],
