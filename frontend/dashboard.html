@@ -579,8 +579,13 @@ function renderResults(d) {
         <div class="pop-label">Predicted population of <strong>${d.city}</strong> by ${d.target_year}</div>
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
           <span class="badge badge-purple">🗺️ ${d.state}</span>
-          <span class="badge badge-blue">⏱️ ${d.years_ahead} years ahead</span>
-          <span class="badge badge-success">±${d.years_ahead > 15 ? 20 : 10}% confidence</span>
+          <span class="badge badge-blue">⏱️ ${d.years_ahead} yrs ahead</span>
+          <span class="badge ${d.years_ahead > 20 ? 'badge-warning' : 'badge-success'}">
+            ±${d.years_ahead > 20 ? '25' : d.years_ahead > 15 ? '15' : '10'}% uncertainty
+          </span>
+          <span class="badge ${d.city_tier === 'tier1' ? 'badge-purple' : 'badge-blue'}">
+            ${d.city_tier === 'tier1' ? '🏙️ Tier 1 Metro' : '🌆 Tier 2 City'}
+          </span>
         </div>
       </div>
       <div class="model-info">
@@ -596,7 +601,7 @@ function renderResults(d) {
     
     <!-- Map Container -->
     <div class="card fade-in fade-in-delay-1" style="padding:0; overflow:hidden; border-radius:var(--radius-xl);">
-      <div id="city-map" style="height: 380px; width: 100%; background: #0f0f1a;"></div>
+      <div id="city-map" style="height: 380px; width: 100%; background: #f8f9fc;"></div>
     </div>
 
     <!-- CAGR + Density chips -->
