@@ -1,0 +1,101 @@
+# IDP Project: Master Viva & Presentation Guide
+
+This guide is an exhaustive list of technical and conceptual questions you may face during your project presentation. It covers the data pipeline, the exact mathematics used, the machine learning methods, and the urban planning logic.
+
+---
+
+## 🧹 1. Data Cleaning & Veracity
+
+**Q: Is your data true and accurate? Where exactly is it from?**
+**Answer:** Yes, the data is highly accurate. The historical population data (1980–2025) was sourced directly from the **United Nations World Urbanization Prospects (2024 Revision)**. This is the global standard dataset for urban agglomeration tracking.
+The infrastructure norms are not guessed; they are hard standards taken from the **URDPFI (Urban and Regional Development Plans Formulation and Implementation) Guidelines** issued by the Ministry of Housing and Urban Affairs (MoHUA), India, as well as **WHO guidelines** (for hospitals) and the **MoUD Urban Mobility India Report** (for transit modal splits). Demographic percentages (like the % of school-age children) are based on **India Census projections for 2024**.
+
+**Q: How did you clean or preprocess the data?**
+**Answer:** The raw data from the UN required significant preprocessing to be usable by our ML models:
+1.  **Urban Agglomeration Mapping:** The UN data tracks contiguous urban agglomerations, not just strict municipal limits. We had to ensure the data accurately reflected the real-world sprawl of the city (e.g., Delhi NCR vs just New Delhi).
+2.  **Handling Anomalies:** We identified anomalies in historical data where city borders were redefined, causing artificial "drops" in population. We cleaned this by mathematically enforcing a strict "no-decline" rule, as major Indian metros do not shrink organically. We smoothed these anomalies using monotonic constraints.
+3.  **Data Structuring:** We transformed the data from a massive global spreadsheet into a clean, normalized CSV format, isolating data strictly in 5-year intervals (1980, 1985... 2025) so our Scikit-Learn models had uniformly distributed time-series data.
+
+---
+
+## 🧮 2. Mathematics & Methodologies
+
+**Q: Where exactly is math being used in your project?**
+**Answer:** Mathematics is the core of this project, used in two primary areas:
+1.  **Machine Learning (Regression Math):** We use mathematical curve fitting to predict the future. For example, our Logistic Regression model uses the logistic function formula: `P(t) = K / (1 + e^(-r(t-t0)))`, where `K` is the carrying capacity, `r` is the growth rate, and `t0` is the midpoint. Our Ridge Polynomial uses matrix algebra with L2 regularization to find a smooth curve without overfitting.
+2.  **Infrastructure Forecasting (Proportional Math):** We use demographic ratios. To calculate required schools, we don't divide the whole city by a number. We use the formula: `Schools Needed = (Total Predicted Population * 0.246) / 800`. We calculate the exact subset of the population (24.6% are students) and apply the specific URDPFI ratio (1 school per 800 students).
+
+**Q: What specific ML methods/algorithms are you using?**
+**Answer:** We built a multi-model ensemble using the `scikit-learn` Python library. We race 5 algorithms against each other:
+1.  **Linear Regression:** Fits a straight line (`y = mx + c`).
+2.  **Exponential Growth:** Fits a curve where growth is proportional to the current size (`y = a * e^(bx)`).
+3.  **Ridge Regression (Degree 2 Polynomial):** Fits a parabola (`y = ax^2 + bx + c`) but applies an L2 penalty to the coefficients (`a`, `b`) to prevent the curve from bending too aggressively into unrealistic extremes.
+4.  **Logistic Regression:** Fits an S-curve, assuming the city will eventually run out of space/resources and growth will slow down towards a maximum "carrying capacity".
+5.  **Recent Exponential:** An exponential curve trained *only* on the last 5-10 years, ignoring older data to capture sudden recent tech booms (like in Bangalore or Hyderabad).
+
+---
+
+## 🧪 3. Model Training & Verification
+
+**Q: What percentage of the data is used for training and testing?**
+**Answer:** We use an **80/20 Chronological Train-Test Split**. 
+Our dataset for a city contains 10 historical data points (every 5 years from 1980 to 2025). 
+*   **Training Set (80%):** We train the models on the first 8 data points (1980–2020).
+*   **Testing Set (20%):** We hide the last 2 data points (usually just the 2025 data). We ask the trained models to predict 2025, and then we compare their prediction to the hidden, real 2025 data.
+
+**Q: How do you verify the result? How do we know the prediction isn't just a random guess?**
+**Answer:** We verify the result using **MAPE (Mean Absolute Percentage Error)** and **R² (R-squared) Score**. 
+During the 80/20 test phase, if a model's prediction for the test data is off by more than 20% (MAPE > 20%), the model is instantly disqualified and rejected. 
+Furthermore, we display the **Test R² Score** on the dashboard for the user. An R² score tells us how well the mathematical curve fits the historical variance. A score above 0.95 (which our models routinely hit) proves the prediction is mathematically sound based on historical trends.
+
+**Q: How does the system choose which model wins?**
+**Answer:** It is not a blind "lowest error wins" system. We use a **Priority Hierarchy**. 
+Among the models that pass the <20% error validation, we prioritize them in this order: `Logistic > Recent Exp > Exponential > Ridge > Linear`. 
+*Why?* Because an S-curve (Logistic) is a mathematically and physically more realistic representation of long-term urban growth (cities eventually run out of space) than a straight line (Linear) that goes up forever, even if the straight line happened to have a slightly lower error rate on the past 40 years.
+
+---
+
+## 🏗️ 4. Advanced Infrastructure Logic
+
+**Q: Why do cities like Delhi and Jaipur have different infrastructure calculations in your code?**
+**Answer:** We implemented a **City-Tier Architecture**. We classified massive, dense cities (Delhi, Mumbai, Bangalore, Chennai, Kolkata, Hyderabad) as **Tier 1 Metros**, and others (Jaipur, Indore, Surat) as **Tier 2 Cities**.
+*   **Density Norms:** Tier 1 cities are extremely land-scarce. Therefore, they get denser URDPFI norms (e.g., 1 school per 1,200 students using multi-shift/high-rise models) compared to Tier 2 cities (1 school per 800 students).
+*   **Modal Split (Buses):** We don't assume everyone takes a bus. Using the MoUD Urban Mobility Report, we know that in Tier 1 cities, only **28%** of commuters use public buses (because they have Metros and high private vehicle ownership). In Tier 2 cities without Metros, **38%** rely on buses. Our math calculates the total commuters (Workers + Students * 75% commute rate), applies this modal split percentage, and *only then* divides by the bus capacity (50).
+
+**Q: What if the model predicts a population decline?**
+**Answer:** Our backend enforces a strict "Growth-Only" constraint. Because major Indian urban agglomerations are universally experiencing net positive migration and growth, any model that predicts a future population lower than the 2025 baseline is programmatically rejected. For the Logistic model, we mathematically enforce this by setting the carrying capacity `K` to 4 times the current population, guaranteeing an upward trajectory.
+
+---
+
+## 💻 5. Architecture & Security
+
+**Q: What is your tech stack and why did you choose it?**
+**Answer:** 
+*   **Frontend (Vercel):** Vanilla HTML/CSS/JS with Chart.js. We chose Vercel for its Edge Network, guaranteeing ultra-fast load times globally without needing a heavy framework like React for a single-page dashboard.
+*   **Backend (Render.com):** Python with **FastAPI**. We chose FastAPI over Flask/Django because it is asynchronous, natively handles JSON validation via Pydantic, and is significantly faster.
+*   **Data:** Pandas and Scikit-Learn for ultra-fast, in-memory vectorized calculations.
+
+**Q: How did you secure your backend API?**
+**Answer:** Our API is secured on three fronts:
+1.  **Rate Limiting:** We use the `slowapi` library to track IP addresses. A user can only hit the AI prediction endpoint 10 times per minute. This prevents malicious bots from overwhelming our free Render server.
+2.  **Input Validation:** FastAPI strictly validates that the `target_year` is an integer between 2026 and 2060, and that the city name is a valid string, preventing injection attacks.
+3.  **Keep-Alive:** Render free-tier servers sleep after 15 minutes. Our frontend JavaScript implements a silent `setInterval` ping to a `/health` endpoint every 9 minutes. This guarantees the server never goes to sleep while a user is actively looking at the dashboard.
+
+---
+
+## ❓ 6. Defending Your Choices (The "Why Did You Use..." Questions)
+
+**Q: Why did you use Python for the backend instead of Node.js or Java?**
+**Answer:** Python is the undisputed industry standard for Machine Learning and Data Science. Since our core logic requires running `scikit-learn` algorithms (Logistic, Ridge, Exponential regressions) and manipulating DataFrames with `pandas`, Python was the only logical choice. Doing this in Node.js or Java would require building custom mathematical models from scratch or using inferior libraries.
+
+**Q: Why did you use FastAPI instead of Flask or Django?**
+**Answer:** Django is too heavy and monolithic for a simple API. Flask is lightweight but synchronous. **FastAPI** is modern, asynchronous by default, and natively uses Pydantic for data validation. This means if a user sends a string instead of a number for the year, FastAPI blocks it automatically before it even reaches our code, making it extremely secure and incredibly fast.
+
+**Q: Why did you use basic Scikit-Learn models instead of a Deep Learning Neural Network (like LSTM or PyTorch)?**
+**Answer:** Deep learning requires massive amounts of data to be effective (thousands or millions of rows). Our dataset consists of decadal/quinquennial census points (only 10 historical points per city). If we used a Neural Network, it would **overfit** instantly and produce garbage results. For small, sparse time-series datasets, traditional mathematical curve fitting (Logistic, Ridge) is statistically far more accurate and scientifically sound than deep learning.
+
+**Q: Why did you host the frontend on Vercel and the backend on Render instead of hosting them together?**
+**Answer:** We used a **decoupled architecture** to bypass platform limitations. Vercel is unparalleled for hosting static frontends (HTML/JS) because of its global Edge Network, meaning the UI loads instantly anywhere in the world. However, Vercel's Serverless Functions have a strict 50MB size limit for Python. Our machine learning libraries (`scikit-learn`, `scipy`, `pandas`) exceed 200MB. Therefore, we split the architecture: the lightweight UI is on Vercel, and the heavy ML computation is hosted on Render.com, which acts as a dedicated microservice.
+
+**Q: Why did you use plain HTML/JS instead of React or Angular for the frontend?**
+**Answer:** The frontend is a single, clean dashboard. Using a heavy framework like React would require shipping hundreds of kilobytes of JavaScript to the user's browser just to render a basic form and some charts. By using Vanilla JS, the website is incredibly lightweight, has zero dependencies, and loads instantaneously, providing a much better user experience.

@@ -239,6 +239,30 @@
   </div>
 </nav>
 
+<!-- ETL Status Bar -->
+<div id="status-bar" style="
+  background: #f0f9ff;
+  border-bottom: 1px solid #bae6fd;
+  padding: 8px 0;
+  font-size: 0.78rem;
+  color: #0369a1;
+">
+  <div class="container" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <span id="etl-status-text">⏳ Checking data status...</span>
+    <span id="model-status-text" style="color:#7c3aed;"></span>
+    <span style="margin-left:auto;display:flex;gap:8px;">
+      <button id="refresh-data-btn" onclick="triggerETL()" style="
+        background:#0ea5e9;color:white;border:none;border-radius:6px;
+        padding:4px 12px;font-size:0.75rem;cursor:pointer;font-weight:600;
+      ">&#x21bb; Refresh Data</button>
+      <button id="retrain-btn" onclick="triggerTraining()" style="
+        background:#7c3aed;color:white;border:none;border-radius:6px;
+        padding:4px 12px;font-size:0.75rem;cursor:pointer;font-weight:600;
+      ">&#x1F916; Retrain Models</button>
+    </span>
+  </div>
+</div>
+
 <div class="container">
   <div class="dashboard-layout">
 
@@ -357,8 +381,81 @@ document.getElementById("city-select").addEventListener("change", async (e) => {
   } catch {}
 });
 
+// ── ETL & Training Status Bar ─────────────────────────────────────
+
+function _timeAgo(isoStr) {
+  if (!isoStr) return "never";
+  const diff = (Date.now() - new Date(isoStr).getTime()) / 1000;
+  if (diff < 60)   return `${Math.round(diff)}s ago`;
+  if (diff < 3600) return `${Math.round(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.round(diff/3600)}h ago`;
+  return `${Math.round(diff/86400)}d ago`;
+}
+
+async function loadStatusBar() {
+  try {
+    const [etlRes, modelRes] = await Promise.allSettled([
+      fetch(`${API_BASE}/etl/status`).then(r => r.json()),
+      fetch(`${API_BASE}/models/status`).then(r => r.json()),
+    ]);
+
+    const etl   = etlRes.status   === "fulfilled" ? etlRes.value   : null;
+    const model = modelRes.status === "fulfilled" ? modelRes.value : null;
+
+    const etlEl   = document.getElementById("etl-status-text");
+    const modelEl = document.getElementById("model-status-text");
+
+    if (etl) {
+      const src  = etl.source ? `(${etl.source})` : "";
+      const time = _timeAgo(etl.last_run);
+      const icon = etl.status === "success" ? "✅" : etl.status === "never_run" ? "⚪" : "❌";
+      etlEl.textContent = `${icon} Data last updated: ${time} ${src}`;
+    } else {
+      etlEl.textContent = "⚠️ ETL status unavailable";
+    }
+
+    if (model) {
+      const time = _timeAgo(model.last_trained_at);
+      modelEl.textContent = `🤖 Models last trained: ${time} | ${model.cached_entries || 0} cached`;
+    }
+  } catch (e) {
+    document.getElementById("etl-status-text").textContent = "⚠️ Could not load data status";
+  }
+}
+
+async function triggerETL() {
+  const btn = document.getElementById("refresh-data-btn");
+  btn.textContent = "⏳ Running...";
+  btn.disabled = true;
+  try {
+    const res  = await fetch(`${API_BASE}/etl/run`, { method: "POST" });
+    const data = await res.json();
+    document.getElementById("etl-status-text").textContent = "✅ ETL started in background — refresh in ~30s";
+  } catch {
+    document.getElementById("etl-status-text").textContent = "❌ ETL trigger failed";
+  } finally {
+    setTimeout(() => { btn.textContent = "↻ Refresh Data"; btn.disabled = false; loadStatusBar(); }, 5000);
+  }
+}
+
+async function triggerTraining() {
+  const btn = document.getElementById("retrain-btn");
+  btn.textContent = "⏳ Training...";
+  btn.disabled = true;
+  try {
+    await fetch(`${API_BASE}/models/train`, { method: "POST" });
+    document.getElementById("model-status-text").textContent = "🤖 Training started in background...";
+  } catch {
+    document.getElementById("model-status-text").textContent = "❌ Training trigger failed";
+  } finally {
+    setTimeout(() => { btn.textContent = "🤖 Retrain Models"; btn.disabled = false; loadStatusBar(); }, 8000);
+  }
+}
+
 // Parse URL params (from quick search on homepage)
 window.addEventListener("DOMContentLoaded", () => {
+  loadStatusBar();  // Load ETL + model status on page open
+
   const params = new URLSearchParams(window.location.search);
   const city = params.get("city");
   const year = params.get("year");

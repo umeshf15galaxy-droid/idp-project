@@ -6,3 +6,7 @@ scikit-learn
 scipy
 python-multipart
 slowapi
+sqlalchemy
+psycopg2-binary
+requests
+apscheduler
