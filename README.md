@@ -105,14 +105,14 @@ Ahmedabad · Surat · Jaipur · Lucknow · Kanpur · Nagpur · Indore · Thane
 
 ---
 
-## Infrastructure Norms
+## Infrastructure Norms (V2 — Demographic-Aware)
 
-| Metric | Norm |
-|--------|------|
-| Schools | 1 per 5,000 people |
-| Hospitals | 1 per 25,000 people |
-| Buses | 1 per 1,200 people |
-| Roads | 1 km per 800 people |
+| Metric | Tier 1 Metro | Tier 2 City | Applies To |
+|--------|-------------|-------------|------------|
+| Schools | 1 per 1,200 students | 1 per 800 students | Ages 5–17 (24.6% of pop) |
+| Hospitals | 1 per 8,000 people | 1 per 10,000 people | Total population |
+| Buses | 1 per 50 bus riders | 1 per 50 bus riders | Public bus commuters only (28% / 38% modal split) |
+| Roads | 1 km per 1,000 people | 1 km per 800 people | Total population |
 
 ---
 

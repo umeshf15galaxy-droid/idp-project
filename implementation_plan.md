@@ -33,7 +33,7 @@ This is **Version 1** — no AI chatbots, no 3D maps, no login systems. Pure pre
 > 3. **Infrastructure ratios**: I'll use standard Indian urban planning ratios. Want to customize them?
 >    - 1 school per 5,000 people
 >    - 1 hospital per 25,000 people
->    - 1 bus per 1,200 people
+>    - 1 bus per 50 public-bus commuters (28% modal split Tier 1 / 38% Tier 2, MoUD 2024)
 >    - 1 km road per 800 people
 
 ---
@@ -185,12 +185,14 @@ Returns current data + historical population for a city.
 
 ## Infrastructure Formulas (V1)
 
-```python
-schools    = predicted_population // 5_000
-hospitals  = predicted_population // 25_000
-buses      = predicted_population // 1_200
-roads_km   = predicted_population // 800
-```
+# V2 (current) — Demographic-Aware with Modal Split
+all_commuters = population * (0.564 + 0.246) * 0.75  # 75% commute rate
+bus_share     = 0.28 if city_tier == "tier1" else 0.38  # MoUD 2024 modal split
+bus_commuters = all_commuters * bus_share               # only public bus riders
+schools    = school_age_pop // 800          # Tier 2 (or 1200 for Tier 1)
+hospitals  = population    // 10000         # Tier 2 (or 8000 for Tier 1)
+buses      = bus_commuters // 50            # 1 bus per 50 public-bus riders
+roads_km   = population    // 800           # Tier 2 (or 1000 for Tier 1)
 
 Deficit = required − current (negative means surplus)
 

@@ -1,0 +1,141 @@
+DATA SOURCES REFERENCE FILE
+============================
+IDP Project — Urban Infrastructure Prediction System
+All numbers used in infrastructure.csv — where each came from
+
+
+1. COORDINATES (Latitude & Longitude)
+---------------------------------------
+Source: OpenStreetMap Nominatim API (https://nominatim.openstreetmap.org)
+Method: Auto-fetched via Python script (data/collect_data.py)
+Date collected: July 2025
+Trust level: 5/5 — OpenStreetMap is maintained by millions of contributors worldwide
+All 15 cities verified: Delhi, Mumbai, Bangalore, Kolkata, Chennai, Hyderabad,
+Ahmedabad, Pune, Surat, Jaipur, Lucknow, Kanpur, Nagpur, Indore, Visakhapatnam
+
+
+2. POPULATION (1980-2025)
+--------------------------
+Source: UN World Urbanization Prospects (https://population.un.org/wup/)
+Dataset: Urban agglomeration populations, 5-year intervals
+Method: Downloaded from UN city datasets and formatted into population.csv
+Trust level: 5/5 — this is the international gold standard used by World Bank, IMF, and all governments
+Years covered: 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025
+
+
+3. SCHOOLS
+-----------
+Source: UDISE+ 2022-23 (Unified District Information System for Education Plus)
+Website: https://udiseplus.gov.in
+Published by: Ministry of Education, Government of India
+Method: District-level data aggregated for each city's municipal boundaries
+Trust level: 5/5 — official government census of every school in India
+
+Numbers used (urban area totals including govt + private schools):
+Delhi          : 5,532 schools  (Delhi district + NCT data)
+Mumbai         : 4,800 schools  (Mumbai City + Mumbai Suburban districts)
+Bangalore      : 6,200 schools  (BBMP area — Bengaluru Urban district)
+Kolkata        : 4,612 schools  (Kolkata Metropolitan Area)
+Chennai        : 4,321 schools  (Chennai Corporation limits)
+Hyderabad      : 5,100 schools  (GHMC area)
+Ahmedabad      : 3,892 schools  (AMC area)
+Pune           : 3,540 schools  (PMC + PCMC combined)
+Surat          : 2,980 schools  (SMC area)
+Jaipur         : 2,640 schools  (JMC area)
+Lucknow        : 2,310 schools  (LMC area)
+Kanpur         : 2,180 schools  (KMC area)
+Nagpur         : 2,050 schools  (NMC area)
+Indore         : 2,430 schools  (IMC area)
+Visakhapatnam  : 1,840 schools  (GVMC area)
+
+
+4. HOSPITALS
+-------------
+Source: National Health Resource Repository (NHRR) + Health Dynamics of India 2022-23
+Website: https://nhsrcindia.org / https://mohfw.gov.in
+Published by: Ministry of Health & Family Welfare, Government of India
+Note: Includes both public hospitals (PHC, CHC, district hospitals) and registered private hospitals
+Trust level: 4/5 — public facilities are accurately counted; private hospital data may have minor gaps
+
+Numbers used (total registered hospitals in city limits):
+Delhi          : 1,058 hospitals
+Mumbai         : 978 hospitals
+Bangalore      : 897 hospitals
+Kolkata        : 765 hospitals
+Chennai        : 812 hospitals
+Hyderabad      : 892 hospitals
+Ahmedabad      : 615 hospitals
+Pune           : 572 hospitals
+Surat          : 431 hospitals
+Jaipur         : 394 hospitals
+Lucknow        : 382 hospitals
+Kanpur         : 340 hospitals
+Nagpur         : 312 hospitals
+Indore         : 346 hospitals
+Visakhapatnam  : 298 hospitals
+
+
+5. BUSES
+---------
+Source: Individual City Transport Corporation Annual Reports (2023)
+Trust level: 4/5 — official published figures from government transport corporations
+
+Delhi     : 4,100 buses — DTC (Delhi Transport Corporation) annual report 2023
+            (Source: Hindustan Times, DTC fleet ~3,920 + hired buses ~180)
+Mumbai    : 3,000 buses — BEST (Brihanmumbai Electric Supply & Transport) 2023
+            (Source: Mid-Day, Swarajya Mag — fleet including wet-lease contracts)
+Bangalore : 6,800 buses — BMTC (Bengaluru Metropolitan Transport Corporation) 2023
+            (Source: Transformative Mobility, UITP reports — ~6,500-6,800)
+Kolkata   : 3,100 buses — CTC (Calcutta Tramways + WBSTC urban routes) 2023
+Chennai   : 3,450 buses — MTC (Metropolitan Transport Corporation) 2023
+            (Source: dtnext.in, TN Government report — ~3,450 buses)
+Hyderabad : 9,200 buses — TSRTC (Telangana State Road Transport Corporation) 2023
+            (Source: CARE Ratings, Telangana Govt — fleet 9,233 buses)
+Ahmedabad : 1,292 buses — AMTS (Ahmedabad Municipal Transport Service) 2023
+            (Source: Wikipedia AMTS, Gujarat Samachar)
+Pune      : 2,100 buses — PMPML (Pune Mahanagar Parivahan Mahamandal Ltd) 2023
+            (Source: Motor India, Hindustan Times — ~2,000-2,100)
+Surat     : 870 buses  — SMC Sitilink BRTS + city buses 2023
+            (Source: India Times, Surat Municipal Corporation)
+Jaipur    : 350 buses  — JCTSL (Jaipur City Transport Services Ltd) 2023
+            (Source: Wikipedia JCTSL — fleet ~200-400, using midpoint 350)
+Lucknow   : 650 buses  — LCTSL (Lucknow City Transport Services) 2023
+Kanpur    : 480 buses  — UPSRTC Kanpur urban division 2023
+Nagpur    : 480 buses  — MSRTC Nagpur division + NMC city buses 2023
+Indore    : 610 buses  — AICTSL (Atal Indore City Transport Services Ltd) 2023
+Visakhapatnam: 780 buses — APSRTC Visakhapatnam urban division 2023
+
+
+6. ROAD LENGTH (km)
+--------------------
+Source: data.gov.in + Municipal Corporation annual reports + Smart City Mission data
+Published by: Ministry of Housing & Urban Affairs, individual Municipal Corporations
+Trust level: 4/5 — official government estimates from urban planning reports
+
+Delhi          : 33,000 km  (PWD Delhi + DDA road network, includes all categories)
+Mumbai         : 14,500 km  (BMC road network 2023 report)
+Bangalore      : 12,800 km  (BBMP road network including ward roads)
+Kolkata        : 7,800 km   (KMC road network)
+Chennai        : 9,200 km   (GCC road network including arterials)
+Hyderabad      : 11,500 km  (GHMC road network)
+Ahmedabad      : 9,800 km   (AMC + AUDA road network)
+Pune           : 7,200 km   (PMC + PCMC combined road network)
+Surat          : 6,800 km   (SMC road network)
+Jaipur         : 8,200 km   (JMC + JDA road network)
+Lucknow        : 6,100 km   (LMC road network)
+Kanpur         : 5,800 km   (KMC road network)
+Nagpur         : 5,200 km   (NMC road network)
+Indore         : 5,600 km   (IMC road network)
+Visakhapatnam  : 4,800 km   (GVMC road network)
+
+
+7. CITY AREA (km2)
+--------------------
+Source: Municipal Corporation official boundaries + Census 2011 urban agglomeration area
+Updated with UN World Urbanization Prospects area data
+Trust level: 5/5
+
+Delhi: 1484 km2, Mumbai: 603 km2, Bangalore: 741 km2, Kolkata: 205 km2
+Chennai: 426 km2, Hyderabad: 650 km2, Ahmedabad: 464 km2, Pune: 331 km2
+Surat: 326 km2, Jaipur: 485 km2, Lucknow: 349 km2, Kanpur: 403 km2
+Nagpur: 227 km2, Indore: 530 km2, Visakhapatnam: 682 km2

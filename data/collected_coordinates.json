@@ -1,0 +1,107 @@
+{
+  "Delhi": {
+    "city": "Delhi",
+    "latitude": 28.6138954,
+    "longitude": 77.2090057,
+    "display_name": "New Delhi, Delhi, India",
+    "state": "Delhi"
+  },
+  "Mumbai": {
+    "city": "Mumbai",
+    "latitude": 19.054999,
+    "longitude": 72.8692035,
+    "display_name": "Mumbai, Mumbai Suburban District, Maharashtra, 400051, India",
+    "state": "Maharashtra"
+  },
+  "Bangalore": {
+    "city": "Bangalore",
+    "latitude": 12.9767936,
+    "longitude": 77.590082,
+    "display_name": "Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, India",
+    "state": "Karnataka"
+  },
+  "Kolkata": {
+    "city": "Kolkata",
+    "latitude": 22.5726459,
+    "longitude": 88.3638953,
+    "display_name": "Kolkata, Kolkata Metropolitan Area, Kolkata, West Bengal, India",
+    "state": "West Bengal"
+  },
+  "Chennai": {
+    "city": "Chennai",
+    "latitude": 13.0836939,
+    "longitude": 80.270186,
+    "display_name": "Chennai Corporation, Chennai, Tamil Nadu, India",
+    "state": "Tamil Nadu"
+  },
+  "Hyderabad": {
+    "city": "Hyderabad",
+    "latitude": 17.360589,
+    "longitude": 78.4740613,
+    "display_name": "Hyderabad, Bahadurpura mandal, Hyderabad, Telangana, India",
+    "state": "Telangana"
+  },
+  "Ahmedabad": {
+    "city": "Ahmedabad",
+    "latitude": 23.0215374,
+    "longitude": 72.5800568,
+    "display_name": "Ahmedabad, Gujarat, 380001, India",
+    "state": "Gujarat"
+  },
+  "Pune": {
+    "city": "Pune",
+    "latitude": 18.5213738,
+    "longitude": 73.8545071,
+    "display_name": "Pune, Pune City Subdistrict, Pune, Maharashtra, 411001, India",
+    "state": "Maharashtra"
+  },
+  "Surat": {
+    "city": "Surat",
+    "latitude": 21.2094892,
+    "longitude": 72.8317058,
+    "display_name": "Surat, Katargam Taluka, Surat, Gujarat, 395008, India",
+    "state": "Gujarat"
+  },
+  "Jaipur": {
+    "city": "Jaipur",
+    "latitude": 26.9154576,
+    "longitude": 75.8189817,
+    "display_name": "Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+    "state": "Rajasthan"
+  },
+  "Lucknow": {
+    "city": "Lucknow",
+    "latitude": 26.8381,
+    "longitude": 80.9346001,
+    "display_name": "Lucknow, Uttar Pradesh, 226027, India",
+    "state": "Uttar Pradesh"
+  },
+  "Kanpur": {
+    "city": "Kanpur",
+    "latitude": 26.4609135,
+    "longitude": 80.3217588,
+    "display_name": "Kanpur, Kanpur Nagar, Uttar Pradesh, 208012, India",
+    "state": "Uttar Pradesh"
+  },
+  "Nagpur": {
+    "city": "Nagpur",
+    "latitude": 21.1498134,
+    "longitude": 79.0820556,
+    "display_name": "Nagpur City, Nagpur Urban Taluka, Nagpur, Maharashtra, India",
+    "state": "Maharashtra"
+  },
+  "Indore": {
+    "city": "Indore",
+    "latitude": 22.7203616,
+    "longitude": 75.8681996,
+    "display_name": "Indore, Juni Indore Tahsil, Indore, Madhya Pradesh, 452001, India",
+    "state": "Madhya Pradesh"
+  },
+  "Visakhapatnam": {
+    "city": "Visakhapatnam",
+    "latitude": 17.6935526,
+    "longitude": 83.2921297,
+    "display_name": "Visakhapatnam, Visakhapatnam Urban, Visakhapatnam, Andhra Pradesh, 530001, India",
+    "state": "Andhra Pradesh"
+  }
+}

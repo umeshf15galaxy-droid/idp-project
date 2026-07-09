@@ -644,17 +644,21 @@ function renderResults(d) {
     </div>`).join("");
 
   // ── Year-by-year projection table (every 5 years + target) ──
+  // Modal split: only people who actually use PUBLIC buses (not private vehicles)
+  // Tier 1 metros: 28% bus share | Tier 2 cities: 38% bus share  (MoUD 2024)
+  const busShare = d.city_tier === "tier1" ? 0.28 : 0.38;
   const tableRows = d.projection_series
     .filter((r, i) => i % 5 === 0 || r.year === d.target_year)
     .map(row => {
       const pop = row.population;
       const isTarget = row.year === d.target_year;
       // Demographic-aware formulas matching the backend logic exactly
-      const studentPop = Math.floor(pop * 0.246);
-      const commuterPop = Math.floor(pop * (0.564 + 0.246) * 0.60);
-      const reqSchools = Math.max(1, Math.floor(studentPop / 800));
-      const reqHospitals = Math.max(1, Math.floor(pop / 10000));
-      const reqBuses = Math.max(1, Math.floor(commuterPop / 40));
+      const studentPop    = Math.floor(pop * 0.246);
+      const allCommuters  = Math.floor(pop * (0.564 + 0.246) * 0.75); // 75% commute rate (backend)
+      const busCommuters  = Math.floor(allCommuters * busShare);       // Modal split applied
+      const reqSchools    = Math.max(1, Math.floor(studentPop   / 800));
+      const reqHospitals  = Math.max(1, Math.floor(pop          / 10000));
+      const reqBuses      = Math.max(1, Math.floor(busCommuters / 50));  // 1 bus per 50 bus riders
 
       return `
         <tr style="${isTarget ? 'background:rgba(124,58,237,0.08);font-weight:700;' : ''}">
@@ -772,7 +776,7 @@ function renderResults(d) {
             <div class="progress-bar-fill" style="width: 56.4%; background:#06b6d4;"></div>
           </div>
           <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">
-            Generates commuter transit stress. Used with student population at 60% commute index to plan buses (**1 bus per 40 commuters**).
+            Generates commuter transit stress. Of the ${Math.round((0.564+0.246)*0.75*100)}% who commute, only <strong>${Math.round(busShare*100)}%</strong> use public buses (modal split for ${d.city_tier === 'tier1' ? 'Tier 1 Metro' : 'Tier 2 city'}). Bus planning: <strong>1 bus per 50 public-bus commuters</strong>.
           </div>
         </div>
 
